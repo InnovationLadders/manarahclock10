@@ -56,14 +56,45 @@ export interface Settings {
   displayMode: 'landscape' | 'portrait';
   screenType: 'dawahScreen' | 'prayerTimes';
   fontSettings: {
+    mosqueName: {
+      fontFamily: string;
+      fontWeight: string;
+    };
+    mainTime: {
+      fontFamily: string;
+      fontWeight: string;
+    };
+    gregorianDate: {
+      fontFamily: string;
+      fontWeight: string;
+    };
+    hijriDate: {
+      fontFamily: string;
+      fontWeight: string;
+    };
+    prayerTimes: {
+      fontFamily: string;
+      fontWeight: string;
+    };
+    prayerNames: {
+      fontFamily: string;
+      fontWeight: string;
+    };
+    countdown: {
+      fontFamily: string;
+      fontWeight: string;
+    };
     duasFontSize: number;
     duasFontFamily: string;
+    duasFontWeight: string;
     autoAdjustDuasFontSize: boolean;
     announcementsFontSize: number;
     announcementsFontFamily: string;
+    announcementsFontWeight: string;
     autoAdjustAnnouncementsFontSize: boolean;
     postPrayerDhikrFontSize: number;
     postPrayerDhikrFontFamily: string;
+    postPrayerDhikrFontWeight: string;
     autoAdjustPostPrayerDhikrFontSize: boolean;
   };
   colors: FontColors;
@@ -214,8 +245,18 @@ export const BACKGROUND_IMAGES = [
 export const FONT_FAMILIES = [
   { key: 'Amiri', name: 'أميري (Amiri)' },
   { key: 'Cairo', name: 'القاهرة (Cairo)' },
-  { key: 'Noto Sans Arabic', name: 'نوتو سانس عربي' },
-  { key: 'Tajawal', name: 'تجوال (Tajawal)' }
+  { key: 'Tajawal', name: 'تجوال (Tajawal)' },
+  { key: 'Almarai', name: 'المرعي (Almarai)' }
+];
+
+export const FONT_WEIGHTS = [
+  { key: '300', name: 'خفيف (Light)' },
+  { key: '400', name: 'عادي (Regular)' },
+  { key: '500', name: 'متوسط (Medium)' },
+  { key: '600', name: 'نصف ثقيل (Semi-Bold)' },
+  { key: '700', name: 'ثقيل (Bold)' },
+  { key: '800', name: 'ثقيل جداً (Extra Bold)' },
+  { key: '900', name: 'أثقل (Black)' }
 ];
 
 export const COUNTRY_CALCULATION_METHOD_MAP: Record<string, string> = {

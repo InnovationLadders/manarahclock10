@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Settings, LayoutSettings, FontColors } from '../types';
-import { 
-  Move, 
-  ZoomIn, 
-  ZoomOut, 
-  RotateCcw, 
-  Palette, 
+import { Settings, LayoutSettings, FontColors, FONT_FAMILIES, FONT_WEIGHTS } from '../types';
+import {
+  Move,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Palette,
   Type,
   Monitor,
   Smartphone,
@@ -117,6 +117,21 @@ const LayoutColorSettings: React.FC<LayoutColorSettingsProps> = ({
       fontSettings: {
         ...settings.fontSettings,
         [property]: value
+      }
+    };
+    onSettingsChange(newSettings);
+  };
+
+  // تحديث إعدادات خط عنصر محدد
+  const updateElementFont = (element: string, property: 'fontFamily' | 'fontWeight', value: string) => {
+    const newSettings = {
+      ...settings,
+      fontSettings: {
+        ...settings.fontSettings,
+        [element]: {
+          ...(settings.fontSettings[element as keyof typeof settings.fontSettings] as any),
+          [property]: value
+        }
       }
     };
     onSettingsChange(newSettings);
@@ -400,100 +415,436 @@ const LayoutColorSettings: React.FC<LayoutColorSettingsProps> = ({
 
       {activeTab === 'fonts' && (
         <div className="space-y-4">
-          {/* خط الأدعية */}
+          {/* العناصر الرئيسية */}
           <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-            <h3 className="font-medium text-white mb-4 flex items-center gap-2">
-              <Type className="w-5 h-5" />
-              إعدادات خط الأدعية
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-white/90 text-sm font-medium mb-2">
-                  نوع الخط
-                </label>
-                <select
-                  value={settings.fontSettings.duasFontFamily}
-                  onChange={(e) => updateFontSetting('duasFontFamily', e.target.value)}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                >
-                  <option value="Amiri">أميري (Amiri)</option>
-                  <option value="Cairo">القاهرة (Cairo)</option>
-                  <option value="Noto Sans Arabic">نوتو سانس عربي</option>
-                  <option value="Tajawal">تجوال (Tajawal)</option>
-                </select>
+            <button
+              onClick={() => toggleSection('mainElements')}
+              className="w-full flex items-center justify-between text-white hover:text-blue-200 transition-colors duration-300"
+            >
+              <div className="flex items-center gap-3">
+                <Type className="w-5 h-5" />
+                <span className="font-medium">العناصر الرئيسية</span>
               </div>
-              <div>
-                <label className="block text-white/90 text-sm font-medium mb-2">
-                  حجم الخط ({settings.fontSettings.duasFontSize}px)
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="range"
-                    min="12"
-                    max="48"
-                    value={settings.fontSettings.duasFontSize}
-                    onChange={(e) => updateFontSetting('duasFontSize', parseInt(e.target.value))}
-                    className="flex-1 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
-                  />
-                  <input
-                    type="number"
-                    min="12"
-                    max="48"
-                    value={settings.fontSettings.duasFontSize}
-                    onChange={(e) => updateFontSetting('duasFontSize', parseInt(e.target.value) || 24)}
-                    className="w-16 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm"
-                  />
+              {expandedSections.includes('mainElements') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {expandedSections.includes('mainElements') && (
+              <div className="mt-4 space-y-6">
+                {/* اسم المسجد */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">اسم المسجد</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.mosqueName.fontFamily}
+                        onChange={(e) => updateElementFont('mosqueName', 'fontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.mosqueName.fontWeight}
+                        onChange={(e) => updateElementFont('mosqueName', 'fontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* الوقت الرئيسي */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">الوقت الرئيسي</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.mainTime.fontFamily}
+                        onChange={(e) => updateElementFont('mainTime', 'fontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.mainTime.fontWeight}
+                        onChange={(e) => updateElementFont('mainTime', 'fontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* خط الإعلانات */}
+          {/* التواريخ */}
           <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-            <h3 className="font-medium text-white mb-4 flex items-center gap-2">
-              <Type className="w-5 h-5" />
-              إعدادات خط الإعلانات
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-white/90 text-sm font-medium mb-2">
-                  نوع الخط
-                </label>
-                <select
-                  value={settings.fontSettings.announcementsFontFamily}
-                  onChange={(e) => updateFontSetting('announcementsFontFamily', e.target.value)}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                >
-                  <option value="Amiri">أميري (Amiri)</option>
-                  <option value="Cairo">القاهرة (Cairo)</option>
-                  <option value="Noto Sans Arabic">نوتو سانس عربي</option>
-                  <option value="Tajawal">تجوال (Tajawal)</option>
-                </select>
+            <button
+              onClick={() => toggleSection('dates')}
+              className="w-full flex items-center justify-between text-white hover:text-blue-200 transition-colors duration-300"
+            >
+              <div className="flex items-center gap-3">
+                <Type className="w-5 h-5" />
+                <span className="font-medium">التواريخ</span>
               </div>
-              <div>
-                <label className="block text-white/90 text-sm font-medium mb-2">
-                  حجم الخط ({settings.fontSettings.announcementsFontSize}px)
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="range"
-                    min="12"
-                    max="48"
-                    value={settings.fontSettings.announcementsFontSize}
-                    onChange={(e) => updateFontSetting('announcementsFontSize', parseInt(e.target.value))}
-                    className="flex-1 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
-                  />
-                  <input
-                    type="number"
-                    min="12"
-                    max="48"
-                    value={settings.fontSettings.announcementsFontSize}
-                    onChange={(e) => updateFontSetting('announcementsFontSize', parseInt(e.target.value) || 24)}
-                    className="w-16 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm"
-                  />
+              {expandedSections.includes('dates') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {expandedSections.includes('dates') && (
+              <div className="mt-4 space-y-6">
+                {/* التاريخ الميلادي */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">التاريخ الميلادي</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.gregorianDate.fontFamily}
+                        onChange={(e) => updateElementFont('gregorianDate', 'fontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.gregorianDate.fontWeight}
+                        onChange={(e) => updateElementFont('gregorianDate', 'fontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* التاريخ الهجري */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">التاريخ الهجري</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.hijriDate.fontFamily}
+                        onChange={(e) => updateElementFont('hijriDate', 'fontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.hijriDate.fontWeight}
+                        onChange={(e) => updateElementFont('hijriDate', 'fontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+          </div>
+
+          {/* أوقات الصلاة */}
+          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+            <button
+              onClick={() => toggleSection('prayerTimesSection')}
+              className="w-full flex items-center justify-between text-white hover:text-blue-200 transition-colors duration-300"
+            >
+              <div className="flex items-center gap-3">
+                <Type className="w-5 h-5" />
+                <span className="font-medium">أوقات الصلاة</span>
+              </div>
+              {expandedSections.includes('prayerTimesSection') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {expandedSections.includes('prayerTimesSection') && (
+              <div className="mt-4 space-y-6">
+                {/* أوقات الصلاة (أرقام) */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">أرقام أوقات الصلاة</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.prayerTimes.fontFamily}
+                        onChange={(e) => updateElementFont('prayerTimes', 'fontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.prayerTimes.fontWeight}
+                        onChange={(e) => updateElementFont('prayerTimes', 'fontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* أسماء الصلوات */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">أسماء الصلوات</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.prayerNames.fontFamily}
+                        onChange={(e) => updateElementFont('prayerNames', 'fontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.prayerNames.fontWeight}
+                        onChange={(e) => updateElementFont('prayerNames', 'fontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* العد التنازلي */}
+          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+            <button
+              onClick={() => toggleSection('countdownSection')}
+              className="w-full flex items-center justify-between text-white hover:text-blue-200 transition-colors duration-300"
+            >
+              <div className="flex items-center gap-3">
+                <Type className="w-5 h-5" />
+                <span className="font-medium">العد التنازلي</span>
+              </div>
+              {expandedSections.includes('countdownSection') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {expandedSections.includes('countdownSection') && (
+              <div className="mt-4">
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">أرقام العد التنازلي</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.countdown.fontFamily}
+                        onChange={(e) => updateElementFont('countdown', 'fontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.countdown.fontWeight}
+                        onChange={(e) => updateElementFont('countdown', 'fontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* المحتوى */}
+          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+            <button
+              onClick={() => toggleSection('contentFonts')}
+              className="w-full flex items-center justify-between text-white hover:text-blue-200 transition-colors duration-300"
+            >
+              <div className="flex items-center gap-3">
+                <Type className="w-5 h-5" />
+                <span className="font-medium">المحتوى (أدعية وإعلانات)</span>
+              </div>
+              {expandedSections.includes('contentFonts') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {expandedSections.includes('contentFonts') && (
+              <div className="mt-4 space-y-6">
+                {/* خط الأدعية */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">الأدعية</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.duasFontFamily}
+                        onChange={(e) => updateFontSetting('duasFontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.duasFontWeight}
+                        onChange={(e) => updateFontSetting('duasFontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">الحجم ({settings.fontSettings.duasFontSize}px)</label>
+                      <input
+                        type="number"
+                        min="12"
+                        max="48"
+                        value={settings.fontSettings.duasFontSize}
+                        onChange={(e) => updateFontSetting('duasFontSize', parseInt(e.target.value) || 24)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* خط الإعلانات */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">الإعلانات</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.announcementsFontFamily}
+                        onChange={(e) => updateFontSetting('announcementsFontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.announcementsFontWeight}
+                        onChange={(e) => updateFontSetting('announcementsFontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">الحجم ({settings.fontSettings.announcementsFontSize}px)</label>
+                      <input
+                        type="number"
+                        min="12"
+                        max="48"
+                        value={settings.fontSettings.announcementsFontSize}
+                        onChange={(e) => updateFontSetting('announcementsFontSize', parseInt(e.target.value) || 24)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* خط الذكر بعد الصلاة */}
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <h4 className="text-white font-medium mb-3">الذكر بعد الصلاة</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">نوع الخط</label>
+                      <select
+                        value={settings.fontSettings.postPrayerDhikrFontFamily}
+                        onChange={(e) => updateFontSetting('postPrayerDhikrFontFamily', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_FAMILIES.map(font => (
+                          <option key={font.key} value={font.key}>{font.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">سماكة الخط</label>
+                      <select
+                        value={settings.fontSettings.postPrayerDhikrFontWeight}
+                        onChange={(e) => updateFontSetting('postPrayerDhikrFontWeight', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        {FONT_WEIGHTS.map(weight => (
+                          <option key={weight.key} value={weight.key}>{weight.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">الحجم ({settings.fontSettings.postPrayerDhikrFontSize}px)</label>
+                      <input
+                        type="number"
+                        min="12"
+                        max="48"
+                        value={settings.fontSettings.postPrayerDhikrFontSize}
+                        onChange={(e) => updateFontSetting('postPrayerDhikrFontSize', parseInt(e.target.value) || 28)}
+                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

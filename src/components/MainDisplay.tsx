@@ -243,10 +243,11 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
               transformOrigin: 'center center'
             }}
           >
-            <h1 
-              className="font-bold mb-1 drop-shadow-2xl" 
-              style={{ 
-                fontFamily: 'Amiri, serif',
+            <h1
+              className="mb-1 drop-shadow-2xl"
+              style={{
+                fontFamily: `${settings.fontSettings.mosqueName.fontFamily}, serif`,
+                fontWeight: settings.fontSettings.mosqueName.fontWeight,
                 fontSize: isPortrait ? 'clamp(1.2rem, 5vw, 2.5rem)' : 'clamp(2rem, 4vw, 5rem)',
                 color: settings.colors.mosqueName
               }}
@@ -274,10 +275,11 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                       transformOrigin: 'center center'
                     }}
                   >
-                    <div 
-                      className="font-bold drop-shadow-2xl" 
-                      style={{ 
-                        fontFamily: 'Cairo, sans-serif',
+                    <div
+                      className="drop-shadow-2xl"
+                      style={{
+                        fontFamily: `${settings.fontSettings.mainTime.fontFamily}, sans-serif`,
+                        fontWeight: settings.fontSettings.mainTime.fontWeight,
                         fontSize: 'clamp(1.8rem, 7vw, 3.5rem)',
                         color: settings.colors.mainTime
                       }}
@@ -300,20 +302,22 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     }}
                   >
                     <div className="space-y-0.5">
-                      <div 
-                        className="drop-shadow-lg" 
-                        style={{ 
-                          fontFamily: 'Cairo, sans-serif',
+                      <div
+                        className="drop-shadow-lg"
+                        style={{
+                          fontFamily: `${settings.fontSettings.gregorianDate.fontFamily}, sans-serif`,
+                          fontWeight: settings.fontSettings.gregorianDate.fontWeight,
                           fontSize: 'clamp(0.7rem, 2.2vw, 1rem)',
                           color: settings.colors.gregorianDate
                         }}
                       >
                         {getGregorianDate()}
                       </div>
-                      <div 
-                        className="drop-shadow-lg" 
-                        style={{ 
-                          fontFamily: 'Amiri, serif',
+                      <div
+                        className="drop-shadow-lg"
+                        style={{
+                          fontFamily: `${settings.fontSettings.hijriDate.fontFamily}, serif`,
+                          fontWeight: settings.fontSettings.hijriDate.fontWeight,
                           fontSize: 'clamp(0.8rem, 2.5vw, 1.2rem)',
                           color: settings.colors.hijriDate
                         }}
@@ -399,10 +403,11 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                         transformOrigin: 'center center'
                       }}
                     >
-                      <div 
-                        className="font-bold drop-shadow-2xl" 
-                        style={{ 
-                          fontFamily: 'Cairo, sans-serif',
+                      <div
+                        className="drop-shadow-2xl"
+                        style={{
+                          fontFamily: `${settings.fontSettings.mainTime.fontFamily}, sans-serif`,
+                          fontWeight: settings.fontSettings.mainTime.fontWeight,
                           fontSize: 'clamp(3rem, 6vw, 7rem)',
                           color: settings.colors.mainTime
                         }}
@@ -425,20 +430,22 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                       }}
                     >
                       <div className="space-y-1 md:space-y-2">
-                        <div 
-                          className="drop-shadow-lg" 
-                          style={{ 
-                            fontFamily: 'Cairo, sans-serif',
+                        <div
+                          className="drop-shadow-lg"
+                          style={{
+                            fontFamily: `${settings.fontSettings.gregorianDate.fontFamily}, sans-serif`,
+                            fontWeight: settings.fontSettings.gregorianDate.fontWeight,
                             fontSize: 'clamp(0.9rem, 1.5vw, 1.5rem)',
                             color: settings.colors.gregorianDate
                           }}
                         >
                           {getGregorianDate()}
                         </div>
-                        <div 
-                          className="drop-shadow-lg" 
-                          style={{ 
-                            fontFamily: 'Amiri, serif',
+                        <div
+                          className="drop-shadow-lg"
+                          style={{
+                            fontFamily: `${settings.fontSettings.hijriDate.fontFamily}, serif`,
+                            fontWeight: settings.fontSettings.hijriDate.fontWeight,
                             fontSize: 'clamp(1rem, 1.8vw, 2rem)',
                             color: settings.colors.hijriDate
                           }}
@@ -514,7 +521,8 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                   <h1 
                     className="font-bold mb-2 drop-shadow-2xl" 
                     style={{ 
-                      fontFamily: 'Amiri, serif',
+                      fontFamily: `${settings.fontSettings.mosqueName.fontFamily}, serif`,
+                      fontWeight: settings.fontSettings.mosqueName.fontWeight,
                       fontSize: 'clamp(1.5rem, 4vw, 2rem)',
                       color: settings.colors.mosqueName
                     }}
@@ -566,10 +574,11 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     >
                       {getGregorianDate()}
                     </div>
-                    <div 
-                      className="drop-shadow-lg" 
-                      style={{ 
-                        fontFamily: 'Amiri, serif',
+                    <div
+                      className="drop-shadow-lg"
+                      style={{
+                        fontFamily: `${settings.fontSettings.hijriDate.fontFamily}, serif`,
+                        fontWeight: settings.fontSettings.hijriDate.fontWeight,
                         fontSize: 'clamp(0.9rem, 2.2vw, 1.2rem)',
                         color: settings.colors.hijriDate
                       }}
@@ -612,7 +621,8 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                   <h1 
                     className="font-bold mb-2 drop-shadow-2xl" 
                     style={{ 
-                      fontFamily: 'Amiri, serif',
+                      fontFamily: `${settings.fontSettings.mosqueName.fontFamily}, serif`,
+                      fontWeight: settings.fontSettings.mosqueName.fontWeight,
                       fontSize: 'clamp(2rem, 3vw, 3rem)',
                       color: settings.colors.mosqueName
                     }}
@@ -664,10 +674,11 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     >
                       {getGregorianDate()}
                     </div>
-                    <div 
-                      className="drop-shadow-lg" 
-                      style={{ 
-                        fontFamily: 'Amiri, serif',
+                    <div
+                      className="drop-shadow-lg"
+                      style={{
+                        fontFamily: `${settings.fontSettings.hijriDate.fontFamily}, serif`,
+                        fontWeight: settings.fontSettings.hijriDate.fontWeight,
                         fontSize: 'clamp(1.1rem, 1.8vw, 1.5rem)',
                         color: settings.colors.hijriDate
                       }}

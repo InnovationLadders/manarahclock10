@@ -43,14 +43,45 @@ export const DEFAULT_SETTINGS: Settings = {
   displayMode: 'landscape',
   screenType: 'dawahScreen',
   fontSettings: {
+    mosqueName: {
+      fontFamily: 'Amiri',
+      fontWeight: '700'
+    },
+    mainTime: {
+      fontFamily: 'Cairo',
+      fontWeight: '700'
+    },
+    gregorianDate: {
+      fontFamily: 'Cairo',
+      fontWeight: '400'
+    },
+    hijriDate: {
+      fontFamily: 'Amiri',
+      fontWeight: '600'
+    },
+    prayerTimes: {
+      fontFamily: 'Cairo',
+      fontWeight: '700'
+    },
+    prayerNames: {
+      fontFamily: 'Amiri',
+      fontWeight: '600'
+    },
+    countdown: {
+      fontFamily: 'Cairo',
+      fontWeight: '700'
+    },
     duasFontSize: 24,
     duasFontFamily: 'Amiri',
+    duasFontWeight: '400',
     autoAdjustDuasFontSize: true,
     announcementsFontSize: 24,
     announcementsFontFamily: 'Cairo',
+    announcementsFontWeight: '500',
     autoAdjustAnnouncementsFontSize: true,
     postPrayerDhikrFontSize: 28,
     postPrayerDhikrFontFamily: 'Amiri',
+    postPrayerDhikrFontWeight: '400',
     autoAdjustPostPrayerDhikrFontSize: true,
   },
   colors: {

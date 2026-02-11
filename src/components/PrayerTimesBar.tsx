@@ -34,7 +34,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
               <h3 
                 className="font-bold drop-shadow-lg"
                 style={{ 
-                  fontFamily: 'Amiri, serif',
+                  fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
+                  fontWeight: settings.fontSettings.prayerNames.fontWeight,
                   fontSize: 'clamp(1.2rem, 3vw, 2rem)',
                   color: settings.colors.prayerNamesBar
                 }}
@@ -46,7 +47,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
               <h3 
                 className="font-bold drop-shadow-lg"
                 style={{ 
-                  fontFamily: 'Amiri, serif',
+                  fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
+                  fontWeight: settings.fontSettings.prayerNames.fontWeight,
                   fontSize: 'clamp(1.2rem, 3vw, 2rem)',
                   color: settings.colors.adhanTimes
                 }}
@@ -58,7 +60,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
               <h3 
                 className="font-bold drop-shadow-lg"
                 style={{ 
-                  fontFamily: 'Amiri, serif',
+                  fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
+                  fontWeight: settings.fontSettings.prayerNames.fontWeight,
                   fontSize: 'clamp(1.2rem, 3vw, 2rem)',
                   color: settings.colors.iqamahTimes
                 }}
@@ -80,7 +83,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
                     <h4 
                       className="font-bold drop-shadow-lg"
                       style={{ 
-                        fontFamily: 'Amiri, serif',
+                        fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
+                  fontWeight: settings.fontSettings.prayerNames.fontWeight,
                         fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
                         color: settings.colors.prayerNamesBar
                       }}
@@ -94,7 +98,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
                     <div 
                       className="drop-shadow-lg"
                       style={{ 
-                        fontFamily: 'Cairo, sans-serif',
+                        fontFamily: `${settings.fontSettings.prayerTimes.fontFamily}, sans-serif`,
+                        fontWeight: settings.fontSettings.prayerTimes.fontWeight,
                         fontSize: 'clamp(1.2rem, 3vw, 2rem)',
                         color: settings.colors.adhanTimes
                       }}
@@ -108,7 +113,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
                     <div 
                       className="drop-shadow-lg"
                       style={{ 
-                        fontFamily: 'Cairo, sans-serif',
+                        fontFamily: `${settings.fontSettings.prayerTimes.fontFamily}, sans-serif`,
+                        fontWeight: settings.fontSettings.prayerTimes.fontWeight,
                         fontSize: 'clamp(1.2rem, 3vw, 2rem)',
                         color: settings.colors.iqamahTimes
                       }}
@@ -140,7 +146,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
               <h3 
                 className={`font-bold drop-shadow-lg ${isLargeDisplay ? 'mb-3 md:mb-4 lg:mb-6' : 'mb-1 md:mb-2 lg:mb-3'}`}
                 style={{ 
-                  fontFamily: 'Amiri, serif',
+                  fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
+                  fontWeight: settings.fontSettings.prayerNames.fontWeight,
                   fontSize: isLargeDisplay
                     ? 'clamp(2rem, 4vw, 4rem)'
                     : 'clamp(1rem, 2vw, 2.5rem)',
@@ -153,7 +160,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
                 <div 
                   className="drop-shadow-lg"
                   style={{ 
-                    fontFamily: 'Cairo, sans-serif',
+                    fontFamily: `${settings.fontSettings.prayerTimes.fontFamily}, sans-serif`,
+                    fontWeight: settings.fontSettings.prayerTimes.fontWeight,
                     fontSize: isLargeDisplay
                       ? 'clamp(1.5rem, 3vw, 3rem)'
                       : 'clamp(0.8rem, 1.5vw, 1.8rem)',
@@ -165,7 +173,8 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
                 <div 
                   className="drop-shadow-lg"
                   style={{ 
-                    fontFamily: 'Cairo, sans-serif',
+                    fontFamily: `${settings.fontSettings.prayerTimes.fontFamily}, sans-serif`,
+                    fontWeight: settings.fontSettings.prayerTimes.fontWeight,
                     fontSize: isLargeDisplay
                       ? 'clamp(1.5rem, 3vw, 3rem)'
                       : 'clamp(0.8rem, 1.5vw, 1.8rem)',

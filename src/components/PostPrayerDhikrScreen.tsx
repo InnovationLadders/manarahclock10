@@ -111,11 +111,12 @@ const PostPrayerDhikrScreen: React.FC<PostPrayerDhikrScreenProps> = ({
       {/* النص الرئيسي */}
       <div className="flex-1 flex flex-col justify-start px-6 md:px-12 lg:px-16 py-2 min-h-0 overflow-hidden">
         <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col justify-center">
-          <div 
+          <div
             ref={textRef}
-            className="text-center leading-relaxed drop-shadow-lg overflow-y-auto flex-1 flex items-start justify-center pt-4 font-bold"
-            style={{ 
+            className="text-center leading-relaxed drop-shadow-lg overflow-y-auto flex-1 flex items-start justify-center pt-4"
+            style={{
               fontFamily: `${settings.fontSettings.postPrayerDhikrFontFamily}, serif`,
+              fontWeight: settings.fontSettings.postPrayerDhikrFontWeight,
               fontSize: `${dynamicFontSize}px`,
               color: '#000000',
               lineHeight: '1.6'
