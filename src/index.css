@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.font-amiri {
+  font-family: 'Amiri', serif;
+}
+
+.font-cairo {
+  font-family: 'Cairo', sans-serif;
+}
+
+/* تدوير المحتوى الرئيسي للوضع الطولي */
+.main-display-portrait {
+  transform: rotate(90deg);
+  transform-origin: center center;
+  width: 100vh;
+  height: 100vw;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -50vw;
+  margin-left: -50vh;
+}
+
+/* تحسين الأداء */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* إخفاء شريط التمرير */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* تحسين التمرير للصفحة الرئيسية */
+.landing-page-container {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* تحسين التمرير على الأجهزة المحمولة */
+@media (max-width: 768px) {
+  .landing-page-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* أنيميشن الدوران البطيء لشاشة التحميل */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
