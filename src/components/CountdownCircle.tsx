@@ -45,33 +45,37 @@ const CountdownCircle: React.FC<CountdownCircleProps> = ({
           } as React.CSSProperties}
         >
           {/* نوع العد التنازلي */}
-          <div 
-            className="mb-1 md:mb-2 drop-shadow-lg text-center leading-tight" 
-            style={{ 
-              fontFamily: 'Amiri, serif',
+          <div
+            className="mb-1 md:mb-2 drop-shadow-lg text-center leading-tight"
+            style={{
+              fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
+              fontWeight: settings.fontSettings.prayerNames.fontWeight,
               fontSize: 'clamp(0.6rem, 1vw, 1.2rem)',
               color: settings.colors.countdownType
             }}
           >
             {nextPrayer.isIqamah ? 'الوقت المتبقي للإقامة' : 'الوقت المتبقي للأذان'}
           </div>
-          
+
           {/* اسم الصلاة */}
-          <div 
-            className="font-bold mb-2 md:mb-3 drop-shadow-lg text-center" 
-            style={{ 
-              fontFamily: 'Amiri, serif',
+          <div
+            className="mb-2 md:mb-3 drop-shadow-lg text-center"
+            style={{
+              fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
+              fontWeight: settings.fontSettings.prayerNames.fontWeight,
               fontSize: 'clamp(1rem, 2vw, 2.5rem)',
               color: settings.colors.prayerName
             }}
           >
             صلاة {nextPrayer.name}
           </div>
-          
+
           {/* العد التنازلي */}
-          <div 
-            className="font-mono font-bold drop-shadow-lg text-center"
+          <div
+            className="drop-shadow-lg text-center"
             style={{
+              fontFamily: `${settings.fontSettings.countdown.fontFamily}, sans-serif`,
+              fontWeight: settings.fontSettings.countdown.fontWeight,
               fontSize: 'clamp(1.2rem, 2.5vw, 3rem)',
               color: settings.colors.countdownTimer
             }}

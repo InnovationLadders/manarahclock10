@@ -69,26 +69,28 @@ const DuasPanel: React.FC<DuasPanelProps> = ({ duas, settings, isSmallDisplay = 
       <div className={`bg-gradient-to-b from-emerald-600/20 to-teal-600/20 backdrop-blur-sm rounded-2xl border border-white/20 h-full ${
         isSmallDisplay ? 'p-2 md:p-3' : 'p-3 md:p-4 lg:p-6'
       }`}>
-        <h2 
-          className={`font-bold text-center ${
+        <h2
+          className={`text-center ${
             isSmallDisplay ? 'mb-2 md:mb-3' : 'mb-3 md:mb-4 lg:mb-6'
           }`}
-          style={{ 
+          style={{
             fontFamily: `${settings.fontSettings.duasFontFamily}, serif`,
+            fontWeight: settings.fontSettings.duasFontWeight,
             fontSize: isSmallDisplay ? 'clamp(0.8rem, 1.2vw, 1.2rem)' : 'clamp(1rem, 1.8vw, 2rem)',
             color: settings.colors.duasTitle
           }}
         >
           أدعية وأذكار
         </h2>
-        
+
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <p 
+            <p
               ref={textRef}
-              className="leading-relaxed" 
-              style={{ 
+              className="leading-relaxed"
+              style={{
                 fontFamily: `${settings.fontSettings.duasFontFamily}, serif`,
+                fontWeight: settings.fontSettings.duasFontWeight,
                 fontSize: `${dynamicFontSize}px`,
                 color: settings.colors.duasText
               }}
