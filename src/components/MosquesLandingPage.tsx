@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosque, Star, Calendar, BookOpen, ChevronDown, RefreshCw, Mail, Phone, MapIcon, Shield } from 'lucide-react';
+import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosque, Star, Calendar, BookOpen, ChevronDown, RefreshCw, Mail, Phone, MapIcon } from 'lucide-react';
 import { MosqueData, MADHABS } from '../types';
 import { getAllMosques, getAvailableCities, getCacheInfo, clearLocalCache } from '../utils/mosqueUtils';
 
@@ -225,15 +225,6 @@ const MosquesLandingPage: React.FC = () => {
                   <Clock className="w-4 md:w-5 h-4 md:h-5" />
                   <span className="hidden sm:inline">الشاشة الرئيسية</span>
                   <span className="sm:hidden">الشاشة</span>
-                </Link>
-
-                <Link
-                  to="/admin-login"
-                  className="flex-1 lg:flex-none px-3 sm:px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-red-600 to-orange-700 hover:from-red-700 hover:to-orange-800 text-white font-medium rounded-lg md:rounded-xl transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center gap-2 md:gap-3 text-sm md:text-base"
-                >
-                  <Shield className="w-4 md:w-5 h-4 md:h-5" />
-                  <span className="hidden md:inline">تسجيل دخول المسؤول</span>
-                  <span className="md:hidden">مسؤول</span>
                 </Link>
               </div>
             </div>
@@ -528,19 +519,23 @@ const MosquesLandingPage: React.FC = () => {
                   ساعة منارة للمساجد
                 </span>
               </div>
-              
-              <p className="text-xl text-white/80 mb-6 max-w-2xl mx-auto leading-relaxed">
+
+              <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'Cairo, sans-serif' }}>
                 نظام متطور وشامل لعرض أوقات الصلاة والمحتوى الدعوي في المساجد
                 <br />
                 مع دعم كامل للتخصيص والإدارة السحابية
               </p>
-              
-              <div className="flex items-center justify-center gap-8 text-white/60 text-lg">
-                <span>© 2025 جميع الحقوق محفوظة</span>
-                <span>•</span>
-                <span>تطوير سلالم الإبداع</span>
-                <span>•</span>
-                <span>الإصدار 2.0</span>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8 text-white/70">
+                <span className="text-base sm:text-lg" style={{ fontFamily: 'Cairo, sans-serif' }}>© 2025 جميع الحقوق محفوظة</span>
+                <span className="hidden sm:inline text-white/40">•</span>
+                <span className="text-base sm:text-lg" style={{ fontFamily: 'Cairo, sans-serif' }}>تطوير سلالم الإبداع</span>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <p className="text-white/50 text-sm sm:text-base" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                  الإصدار 2.0
+                </p>
               </div>
             </div>
           </div>
