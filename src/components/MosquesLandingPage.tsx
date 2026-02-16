@@ -402,7 +402,20 @@ const MosquesLandingPage: React.FC = () => {
 
                     {/* معلومات المسجد */}
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors duration-300" style={{ fontFamily: 'Amiri, serif' }}>
+                      <h3
+                        className="text-xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors duration-300"
+                        style={{
+                          fontFamily: 'Amiri, serif',
+                          textAlign: 'center',
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word',
+                          lineHeight: '1.4',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}
+                      >
                         {mosque.mosqueName}
                       </h3>
                       

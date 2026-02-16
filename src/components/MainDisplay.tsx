@@ -249,7 +249,13 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                 fontFamily: `${settings.fontSettings.mosqueName.fontFamily}, serif`,
                 fontWeight: settings.fontSettings.mosqueName.fontWeight,
                 fontSize: isPortrait ? 'clamp(1.2rem, 5vw, 2.5rem)' : 'clamp(2rem, 4vw, 5rem)',
-                color: settings.colors.mosqueName
+                color: settings.colors.mosqueName,
+                textAlign: 'center',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                lineHeight: '1.3',
+                maxWidth: '90%',
+                margin: '0 auto'
               }}
             >
               {settings.mosqueName}
@@ -518,13 +524,19 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     transformOrigin: 'center center'
                   }}
                 >
-                  <h1 
-                    className="font-bold mb-2 drop-shadow-2xl" 
-                    style={{ 
+                  <h1
+                    className="font-bold mb-2 drop-shadow-2xl"
+                    style={{
                       fontFamily: `${settings.fontSettings.mosqueName.fontFamily}, serif`,
                       fontWeight: settings.fontSettings.mosqueName.fontWeight,
                       fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-                      color: settings.colors.mosqueName
+                      color: settings.colors.mosqueName,
+                      textAlign: 'center',
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word',
+                      lineHeight: '1.3',
+                      maxWidth: '90%',
+                      margin: '0 auto'
                     }}
                   >
                     {settings.mosqueName}
@@ -618,13 +630,19 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     transformOrigin: 'center center'
                   }}
                 >
-                  <h1 
-                    className="font-bold mb-2 drop-shadow-2xl" 
-                    style={{ 
+                  <h1
+                    className="font-bold mb-2 drop-shadow-2xl"
+                    style={{
                       fontFamily: `${settings.fontSettings.mosqueName.fontFamily}, serif`,
                       fontWeight: settings.fontSettings.mosqueName.fontWeight,
                       fontSize: 'clamp(2rem, 3vw, 3rem)',
-                      color: settings.colors.mosqueName
+                      color: settings.colors.mosqueName,
+                      textAlign: 'center',
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word',
+                      lineHeight: '1.3',
+                      maxWidth: '90%',
+                      margin: '0 auto'
                     }}
                   >
                     {settings.mosqueName}
