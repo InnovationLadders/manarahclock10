@@ -30,7 +30,6 @@ import {
 import { Settings as SettingsType, BackgroundItem, COUNTRIES, CALCULATION_METHODS, MADHABS, FONT_FAMILIES, getRecommendedCalculationMethod, getRecommendedMadhab } from '../types';
 import { getSettings, saveSettings, uploadBackgroundImage, addBackgroundToSettings, removeBackgroundFromSettings, deleteBackgroundImage, updateUserPassword } from '../utils/storage';
 import LayoutColorSettings from './LayoutColorSettings';
-import PrayerTimeVerification from './PrayerTimeVerification';
 import LocationPicker from './LocationPicker';
 
 interface SettingsProps {
@@ -57,7 +56,7 @@ const Settings: React.FC<SettingsProps> = ({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState<'basic' | 'security' | 'backgrounds' | 'layout' | 'content' | 'advanced' | 'verification'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'security' | 'backgrounds' | 'layout' | 'content' | 'advanced'>('basic');
   const [previewMode, setPreviewMode] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -423,7 +422,6 @@ const Settings: React.FC<SettingsProps> = ({
         <div className="flex flex-wrap gap-2 mb-8 bg-white/5 p-2 rounded-xl">
           {[
             { key: 'basic', label: 'الأساسيات', icon: SettingsIcon },
-            { key: 'verification', label: 'التحقق من الأوقات', icon: CheckCircle },
             { key: 'security', label: 'الأمان', icon: Lock },
             { key: 'backgrounds', label: 'الخلفيات', icon: Image },
             { key: 'layout', label: 'التخطيط والألوان', icon: Palette },
@@ -647,27 +645,6 @@ const Settings: React.FC<SettingsProps> = ({
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-
-          {activeTab === 'verification' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold mb-6">التحقق من دقة أوقات الصلاة</h2>
-              <PrayerTimeVerification
-                settings={settings}
-                onApplyAdjustments={(adjustments) => {
-                  setSettings({
-                    ...settings,
-                    prayerTimeAdjustments: adjustments
-                  });
-                  setSaveSuccess(false);
-                  setSaveError('');
-                  setTimeout(() => {
-                    setSaveSuccess(true);
-                    setTimeout(() => setSaveSuccess(false), 3000);
-                  }, 100);
-                }}
-              />
             </div>
           )}
 
