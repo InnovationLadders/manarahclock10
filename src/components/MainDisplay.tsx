@@ -5,7 +5,7 @@ import { useCurrentTime } from '../hooks/useTime';
 import { usePrayerTimes } from '../hooks/usePrayerTimes';
 import { getNextPrayer, formatTime, formatCountdown, getHijriDate, getGregorianDate } from '../utils/prayerCalculations';
 import PrayerTimesBar from './PrayerTimesBar';
-import CountdownCircle from './CountdownCircle';
+import CountdownRectangle from './CountdownRectangle';
 import DuasPanel from './DuasPanel';
 import AnnouncementsPanel from './AnnouncementsPanel';
 
@@ -337,7 +337,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                 {/* العد التنازلي - مضغوط */}
                 {nextPrayer && (
                   <div className="flex-shrink-0 mb-2">
-                    <CountdownCircle
+                    <CountdownRectangle
                       nextPrayer={nextPrayer}
                       countdown={formatCountdown(nextPrayer.isIqamah ? nextPrayer.iqamahTime : nextPrayer.time)}
                       xOffset={settings.layout.countdownCircle.xOffset}
@@ -465,7 +465,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                   {/* العد التنازلي للأذان القادم - الجانب الأيسر */}
                   {nextPrayer && (
                     <div className="flex items-center justify-center">
-                      <CountdownCircle
+                      <CountdownRectangle
                         nextPrayer={nextPrayer}
                         countdown={formatCountdown(nextPrayer.isIqamah ? nextPrayer.iqamahTime : nextPrayer.time)}
                         xOffset={settings.layout.countdownCircle.xOffset}
@@ -609,7 +609,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                       transformOrigin: 'center center'
                     }}
                   >
-                    <CountdownCircle
+                    <CountdownRectangle
                       nextPrayer={nextPrayer}
                       countdown={formatCountdown(nextPrayer.isIqamah ? nextPrayer.iqamahTime : nextPrayer.time)}
                       xOffset={0}
@@ -709,7 +709,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                 {/* العد التنازلي للأذان القادم - الجانب الأيسر */}
                 {nextPrayer && (
                   <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                    <CountdownCircle
+                    <CountdownRectangle
                       nextPrayer={nextPrayer}
                       countdown={formatCountdown(nextPrayer.isIqamah ? nextPrayer.iqamahTime : nextPrayer.time)}
                       xOffset={settings.layout.countdownCircle.xOffset}
