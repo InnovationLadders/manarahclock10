@@ -31,7 +31,7 @@ const CountdownRectangle: React.FC<CountdownRectangleProps> = ({
         className="relative border-2 border-white/30 flex items-center justify-center"
         style={{
           width: 'clamp(280px, 30vw, 450px)',
-          height: 'clamp(160px, 18vh, 250px)',
+          height: 'clamp(180px, 20vh, 280px)',
           borderRadius: '16px',
           background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
           backdropFilter: 'blur(10px)',
@@ -69,14 +69,14 @@ const CountdownRectangle: React.FC<CountdownRectangleProps> = ({
         </div>
 
         {/* المحتوى */}
-        <div className="relative z-10 flex flex-col items-center justify-center px-16 py-6">
+        <div className="relative z-10 flex flex-col items-center justify-center px-16 py-4">
           {/* نوع العد التنازلي */}
           <div
-            className="mb-2 drop-shadow-lg text-center leading-tight"
+            className="mb-1.5 drop-shadow-lg text-center leading-tight"
             style={{
               fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
               fontWeight: settings.fontSettings.prayerNames.fontWeight,
-              fontSize: 'clamp(0.7rem, 1.1vw, 1.3rem)',
+              fontSize: 'clamp(0.65rem, 1vw, 1.1rem)',
               color: settings.colors.countdownType
             }}
           >
@@ -84,15 +84,15 @@ const CountdownRectangle: React.FC<CountdownRectangleProps> = ({
           </div>
 
           {/* خط فاصل */}
-          <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent mb-3"></div>
+          <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent mb-2"></div>
 
           {/* اسم الصلاة */}
           <div
-            className="mb-3 drop-shadow-lg text-center"
+            className="mb-2 drop-shadow-lg text-center leading-tight"
             style={{
               fontFamily: `${settings.fontSettings.prayerNames.fontFamily}, serif`,
               fontWeight: settings.fontSettings.prayerNames.fontWeight,
-              fontSize: 'clamp(1.3rem, 2.2vw, 2.8rem)',
+              fontSize: 'clamp(1.2rem, 2vw, 2.5rem)',
               color: settings.colors.prayerName
             }}
           >
@@ -100,15 +100,15 @@ const CountdownRectangle: React.FC<CountdownRectangleProps> = ({
           </div>
 
           {/* خط فاصل */}
-          <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent mb-3"></div>
+          <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent mb-2"></div>
 
           {/* العد التنازلي */}
           <div
-            className="drop-shadow-lg text-center"
+            className="drop-shadow-lg text-center leading-tight"
             style={{
               fontFamily: `${settings.fontSettings.countdown.fontFamily}, sans-serif`,
               fontWeight: settings.fontSettings.countdown.fontWeight,
-              fontSize: 'clamp(1.5rem, 2.8vw, 3.5rem)',
+              fontSize: 'clamp(1.4rem, 2.5vw, 3.2rem)',
               color: settings.colors.countdownTimer,
               letterSpacing: '0.05em'
             }}

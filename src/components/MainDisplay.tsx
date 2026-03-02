@@ -300,14 +300,14 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                   </div>
                   
                   {/* التاريخ الهجري والميلادي */}
-                  <div 
+                  <div
                     className="text-center mb-2"
                     style={{
                       transform: `translate(${settings.layout.gregorianHijriDate.xOffset}%, ${settings.layout.gregorianHijriDate.yOffset}%) scale(${settings.layout.gregorianHijriDate.scale})`,
                       transformOrigin: 'center center'
                     }}
                   >
-                    <div className="space-y-0.5">
+                    <div className="flex items-center justify-center gap-2">
                       <div
                         className="drop-shadow-lg"
                         style={{
@@ -319,6 +319,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                       >
                         {getGregorianDate()}
                       </div>
+                      <div className="text-white/40" style={{ fontSize: 'clamp(0.7rem, 2.2vw, 1rem)' }}>•</div>
                       <div
                         className="drop-shadow-lg"
                         style={{
@@ -428,14 +429,14 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     </div>
                     
                     {/* التاريخ الهجري والميلادي */}
-                    <div 
+                    <div
                       className="text-center"
                       style={{
                         transform: `translate(${settings.layout.gregorianHijriDate.xOffset}%, ${settings.layout.gregorianHijriDate.yOffset}%) scale(${settings.layout.gregorianHijriDate.scale})`,
                         transformOrigin: 'center center'
                       }}
                     >
-                      <div className="space-y-1 md:space-y-2">
+                      <div className="flex items-center justify-center gap-2 md:gap-3">
                         <div
                           className="drop-shadow-lg"
                           style={{
@@ -447,6 +448,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                         >
                           {getGregorianDate()}
                         </div>
+                        <div className="text-white/40" style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.5rem)' }}>•</div>
                         <div
                           className="drop-shadow-lg"
                           style={{
@@ -569,16 +571,16 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                 </div>
                 
                 {/* التاريخ الهجري والميلادي */}
-                <div 
+                <div
                   style={{
                     transform: `translate(${settings.layout.gregorianHijriDate.xOffset}%, ${settings.layout.gregorianHijriDate.yOffset}%) scale(${settings.layout.gregorianHijriDate.scale})`,
                     transformOrigin: 'center center'
                   }}
                 >
-                  <div className="space-y-1">
-                    <div 
-                      className="drop-shadow-lg" 
-                      style={{ 
+                  <div className="flex items-center justify-center gap-2">
+                    <div
+                      className="drop-shadow-lg"
+                      style={{
                         fontFamily: 'Cairo, sans-serif',
                         fontSize: 'clamp(0.8rem, 2vw, 1rem)',
                         color: settings.colors.gregorianDate
@@ -586,6 +588,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     >
                       {getGregorianDate()}
                     </div>
+                    <div className="text-white/40" style={{ fontSize: 'clamp(0.8rem, 2vw, 1rem)' }}>•</div>
                     <div
                       className="drop-shadow-lg"
                       style={{
@@ -675,16 +678,16 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                 </div>
                 
                 {/* التاريخ الهجري والميلادي */}
-                <div 
+                <div
                   style={{
                     transform: `translate(${settings.layout.gregorianHijriDate.xOffset}%, ${settings.layout.gregorianHijriDate.yOffset}%) scale(${settings.layout.gregorianHijriDate.scale})`,
                     transformOrigin: 'center center'
                   }}
                 >
-                  <div className="space-y-1">
-                    <div 
-                      className="drop-shadow-lg" 
-                      style={{ 
+                  <div className="flex items-center justify-center gap-2">
+                    <div
+                      className="drop-shadow-lg"
+                      style={{
                         fontFamily: 'Cairo, sans-serif',
                         fontSize: 'clamp(1rem, 1.5vw, 1.2rem)',
                         color: settings.colors.gregorianDate
@@ -692,6 +695,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                     >
                       {getGregorianDate()}
                     </div>
+                    <div className="text-white/40" style={{ fontSize: 'clamp(1rem, 1.5vw, 1.2rem)' }}>•</div>
                     <div
                       className="drop-shadow-lg"
                       style={{
