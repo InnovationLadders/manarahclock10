@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from './firebase';
 import { usePrayerTimes } from './hooks/usePrayerTimes';
@@ -8,17 +8,19 @@ import { getScreenState } from './utils/prayerCalculations';
 import MainDisplay from './components/MainDisplay';
 import Settings from './components/Settings';
 import Login from './components/Login';
-import AdminLogin from './components/AdminLogin';
-import AdminPanel from './components/AdminPanel';
 import PrayerInProgressScreen from './components/PrayerInProgressScreen';
 import PostPrayerDhikrScreen from './components/PostPrayerDhikrScreen';
 import { usePWAUpdate } from './hooks/usePWAUpdate';
-import MosquesLandingPage from './components/MosquesLandingPage';
 import { checkAdminStatus } from './utils/adminUtils';
 import { Settings as SettingsIcon, Maximize, Minimize } from 'lucide-react';
 
+const MosquesLandingPage = lazy(() => import('./components/MosquesLandingPage'));
+const AdminLogin = lazy(() => import('./components/AdminLogin'));
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+
 const MainApp: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const params = useParams();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -31,21 +33,12 @@ const MainApp: React.FC = () => {
   const [manualScreenOverride, setManualScreenOverride] = useState<'mainDisplay' | null>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
   const currentTime = useCurrentTime();
-  
-  // الحصول على mosqueId من URL parameters
-  const mosqueId = searchParams.get('mosqueId');
-  
-  console.log('🔗 [App] URL Parameters - mosqueId:', mosqueId);
-  console.log('🔗 [App] نوع mosqueId:', typeof mosqueId, 'القيمة:', JSON.stringify(mosqueId));
-  console.log('🔗 [App] جميع معاملات URL:', Object.fromEntries(searchParams.entries()));
-  
-  // إذا لم يكن هناك mosqueId، توجيه المستخدم إلى الصفحة الرئيسية
+
+  const mosqueId = params.mosqueId || searchParams.get('mosqueId');
+
   useEffect(() => {
     if (!mosqueId) {
-      console.log('❌ [App] لا يوجد mosqueId، توجيه للصفحة الرئيسية');
       navigate('/', { replace: true });
-    } else {
-      console.log('✅ [App] تم العثور على mosqueId:', mosqueId);
     }
   }, [mosqueId, navigate]);
   
@@ -332,12 +325,22 @@ const MainApp: React.FC = () => {
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<MosquesLandingPage />} />
-        <Route path="/admin-login" element={<AdminLogin onLoginSuccess={(user) => window.location.href = '/admin-panel'} onBack={() => window.location.href = '/'} />} />
-        <Route path="/admin-panel" element={<AdminPanel user={null} onLogout={() => { signOut(auth); window.location.href = '/'; }} onBack={() => window.location.href = '/'} />} />
-        <Route path="/display" element={<MainApp />} />
-      </Routes>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-green-500/30 border-t-green-500 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-xl font-medium text-gray-700">جاري التحميل...</p>
+          </div>
+        </div>
+      }>
+        <Routes>
+          <Route path="/" element={<MosquesLandingPage />} />
+          <Route path="/admin-login" element={<AdminLogin onLoginSuccess={(user) => window.location.href = '/admin-panel'} onBack={() => window.location.href = '/'} />} />
+          <Route path="/admin-panel" element={<AdminPanel user={null} onLogout={() => { signOut(auth); window.location.href = '/'; }} onBack={() => window.location.href = '/'} />} />
+          <Route path="/display" element={<MainApp />} />
+          <Route path="/mosque/:mosqueId" element={<MainApp />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

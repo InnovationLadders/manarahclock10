@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosque, Star, Calendar, BookOpen, ChevronDown, RefreshCw, Mail, Phone, MapIcon } from 'lucide-react';
+import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosque, Star, Calendar, BookOpen, ChevronDown, RefreshCw, Mail, Phone, Map as MapIcon } from 'lucide-react';
 import { MosqueData, MADHABS } from '../types';
 import { getAllMosques, getAvailableCities, getCacheInfo, clearLocalCache } from '../utils/mosqueUtils';
+import SEOHelmet from './SEOHelmet';
+import { generateOrganizationSchema, generateWebSiteSchema, generateSoftwareApplicationSchema } from '../utils/seoSchemas';
 
 const MosquesLandingPage: React.FC = () => {
   const [mosques, setMosques] = useState<MosqueData[]>([]);
@@ -28,14 +30,12 @@ const MosquesLandingPage: React.FC = () => {
     
     // مراقبة حالة الاتصال بالإنترنت
     const handleOnline = () => {
-      console.log('🌐 تم الاتصال بالإنترنت');
       setIsOffline(false);
       // إعادة تحميل البيانات عند العودة للاتصال
       loadData();
     };
     
     const handleOffline = () => {
-      console.log('📵 انقطع الاتصال بالإنترنت');
       setIsOffline(true);
     };
     
@@ -51,13 +51,11 @@ const MosquesLandingPage: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      console.log('🔄 بدء تحميل البيانات...');
       const [mosquesData, cities] = await Promise.all([
         getAllMosques(),
         getAvailableCities()
       ]);
       
-      console.log(`✅ تم تحميل ${mosquesData.length} مسجد و ${cities.length} مدينة`);
       setMosques(mosquesData);
       setFilteredMosques(mosquesData);
       setAvailableCities(cities);
@@ -114,13 +112,7 @@ const MosquesLandingPage: React.FC = () => {
   }, [mosques, selectedCity, selectedCountry, searchTerm]);
 
   const openMosqueDisplay = (mosqueId: string) => {
-    console.log('🚀 [MosquesLandingPage] فتح شاشة المسجد - mosqueId:', mosqueId);
-    console.log('🚀 [MosquesLandingPage] نوع mosqueId:', typeof mosqueId, 'القيمة:', JSON.stringify(mosqueId));
-    
-    const targetUrl = `/display?mosqueId=${mosqueId}`;
-    console.log('🚀 [MosquesLandingPage] الرابط المستهدف:', targetUrl);
-    
-    window.location.href = `/display?mosqueId=${mosqueId}`;
+    window.location.href = `/mosque/${mosqueId}`;
   };
 
   const resetFilters = () => {
@@ -141,8 +133,26 @@ const MosquesLandingPage: React.FC = () => {
     );
   }
 
+  const organizationSchema = generateOrganizationSchema();
+  const websiteSchema = generateWebSiteSchema();
+  const softwareSchema = generateSoftwareApplicationSchema();
+
+  const combinedSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [organizationSchema, websiteSchema, softwareSchema]
+  };
+
   return (
     <div className="landing-page-container" dir="rtl">
+      <SEOHelmet
+        title="ساعة منارة | ساعة المسجد الذكية لعرض أوقات الصلاة والأذان"
+        description="ساعة منارة - ساعة المسجد الذكية والتلفزيونية لعرض أوقات الصلاة والأذان بدقة عالية. نظام متطور لإدارة شاشات المساجد مع عرض الأدعية والإعلانات والمحتوى الدعوي. ساعة مسجد ذكية لجميع المساجد في الوطن العربي."
+        keywords="ساعة المسجد الذكية, ساعة مسجد, ساعة منارة, ساعة المسجد التلفزيونية, ساعة اوقات الاذن, أوقات الصلاة, شاشة المسجد, مواقيت الصلاة, نظام المسجد الذكي, عرض أوقات الأذان"
+        ogUrl="https://manarah-display.netlify.app/"
+        canonical="https://manarah-display.netlify.app/"
+        schemaData={combinedSchema}
+      />
+
       {/* الخلفية الإسلامية الجميلة */}
       <div className="fixed inset-0 z-0">
         <div 
@@ -174,7 +184,9 @@ const MosquesLandingPage: React.FC = () => {
                   <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl sm:rounded-2xl md:rounded-3xl shadow-xl md:shadow-2xl transform hover:scale-105 transition-transform duration-300">
                     <img
                       src="/logo MANARAH 25.svg"
-                      alt="شعار منارة"
+                      alt="ساعة منارة - ساعة المسجد الذكية"
+                      width="40"
+                      height="40"
                       className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain drop-shadow-lg"
                     />
                   </div>
@@ -370,7 +382,6 @@ const MosquesLandingPage: React.FC = () => {
                     key={mosque.id}
                     className="group bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden transition-all duration-300 cursor-pointer hover:bg-white/20 hover:scale-105 hover:shadow-2xl hover:border-emerald-400/50 transform"
                     onClick={() => {
-                      console.log('Clicking mosque:', mosque.id, mosque.mosqueName);
                       openMosqueDisplay(mosque.id);
                     }}
                   >
@@ -378,7 +389,10 @@ const MosquesLandingPage: React.FC = () => {
                     <div className="relative h-48 overflow-hidden">
                       <img
                         src={mosque.imageUrl || DEFAULT_MOSQUE_IMAGE}
-                        alt={mosque.mosqueName}
+                        alt={`${mosque.mosqueName} - ساعة المسجد الذكية في ${mosque.location.city}`}
+                        loading="lazy"
+                        width="600"
+                        height="400"
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                         onError={(e) => {
                           e.currentTarget.src = DEFAULT_MOSQUE_IMAGE;
@@ -524,7 +538,9 @@ const MosquesLandingPage: React.FC = () => {
                 <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl shadow-xl">
                   <img
                     src="/logo MANARAH 25.svg"
-                    alt="شعار منارة"
+                    alt="ساعة منارة - ساعة المسجد الذكية"
+                    width="32"
+                    height="32"
                     className="w-8 h-8 object-contain"
                   />
                 </div>

@@ -1,0 +1,16 @@
+# robots.txt for ساعة منارة للمساجد
+# https://manarah-display.netlify.app/robots.txt
+
+User-agent: *
+Allow: /
+Allow: /display
+Allow: /mosque/
+
+Disallow: /admin-panel
+Disallow: /admin-login
+Disallow: /admin
+
+Sitemap: https://manarah-display.netlify.app/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

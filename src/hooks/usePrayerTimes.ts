@@ -15,13 +15,10 @@ export const usePrayerTimes = (user?: User | null, mosqueId?: string) => {
     let timeoutId: NodeJS.Timeout;
 
     const loadSettings = async () => {
-      console.log('🔄 [usePrayerTimes] تحميل الإعدادات - User:', user?.uid, 'MosqueId:', mosqueId);
-      console.log('🔄 [usePrayerTimes] نوع mosqueId:', typeof mosqueId, 'القيمة:', JSON.stringify(mosqueId));
       setLoading(true);
 
       // إضافة مهلة زمنية للتحميل (10 ثوانٍ)
       timeoutId = setTimeout(() => {
-        console.warn('⏱️ [usePrayerTimes] انتهت مهلة تحميل الإعدادات');
         setLoading(false);
         setMosqueFound(false);
       }, 10000);
@@ -30,17 +27,10 @@ export const usePrayerTimes = (user?: User | null, mosqueId?: string) => {
         const { settings: newSettings, found } = await getSettings(user, mosqueId);
         clearTimeout(timeoutId); // إلغاء المهلة الزمنية عند النجاح
 
-        console.log('📋 [usePrayerTimes] الإعدادات المحملة:', {
-          mosqueName: newSettings.mosqueName,
-          found: found,
-          mosqueId: mosqueId,
-          settingsSource: found ? 'من قاعدة البيانات' : 'الإعدادات الافتراضية'
-        });
         setSettings(newSettings);
         setMosqueFound(found);
       } catch (error) {
         clearTimeout(timeoutId); // إلغاء المهلة الزمنية عند حدوث خطأ
-        console.error('❌ [usePrayerTimes] خطأ في تحميل الإعدادات:', error);
         setMosqueFound(false);
         // تحميل الإعدادات الافتراضية في حالة الخطأ
         setSettings(getSettingsSync(mosqueId));
@@ -84,7 +74,6 @@ export const usePrayerTimes = (user?: User | null, mosqueId?: string) => {
       setSettings(newSettings);
       setMosqueFound(found);
     } catch (error) {
-      console.error('خطأ في تحديث الإعدادات:', error);
       setMosqueFound(false);
       // Fallback to default settings if there's an error
       setSettings(getSettingsSync());
