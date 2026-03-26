@@ -4,13 +4,13 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://manarah-display.netlify.app/</loc>
+    <loc>https://manarahclock.net/</loc>
     <lastmod>2025-03-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://manarah-display.netlify.app/display</loc>
+    <loc>https://manarahclock.net/display</loc>
     <lastmod>2025-03-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
