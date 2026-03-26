@@ -44,12 +44,12 @@ export const DEFAULT_SETTINGS: Settings = {
   screenType: 'dawahScreen',
   fontSettings: {
     mosqueName: {
-      fontFamily: 'Amiri',
-      fontWeight: '700'
+      fontFamily: 'Almarai',
+      fontWeight: '900'
     },
     mainTime: {
-      fontFamily: 'Cairo',
-      fontWeight: '700'
+      fontFamily: 'Tajawal',
+      fontWeight: '900'
     },
     gregorianDate: {
       fontFamily: 'Cairo',
@@ -61,7 +61,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     prayerTimes: {
       fontFamily: 'Cairo',
-      fontWeight: '700'
+      fontWeight: '900'
     },
     prayerNames: {
       fontFamily: 'Amiri',
@@ -71,15 +71,15 @@ export const DEFAULT_SETTINGS: Settings = {
       fontFamily: 'Cairo',
       fontWeight: '700'
     },
-    duasFontSize: 24,
+    duasFontSize: 50,
     duasFontFamily: 'Amiri',
     duasFontWeight: '400',
     autoAdjustDuasFontSize: true,
-    announcementsFontSize: 24,
+    announcementsFontSize: 48,
     announcementsFontFamily: 'Cairo',
     announcementsFontWeight: '500',
     autoAdjustAnnouncementsFontSize: true,
-    postPrayerDhikrFontSize: 28,
+    postPrayerDhikrFontSize: 35,
     postPrayerDhikrFontFamily: 'Amiri',
     postPrayerDhikrFontWeight: '400',
     autoAdjustPostPrayerDhikrFontSize: true,
@@ -87,14 +87,14 @@ export const DEFAULT_SETTINGS: Settings = {
   colors: {
     mosqueName: '#ffffff',
     mainTime: '#ffffff',
-    gregorianDate: '#93c5fd',
-    hijriDate: '#a7f3d0',
-    countdownType: '#a7f3d0',
+    gregorianDate: '#ffffff',
+    hijriDate: '#fafafa',
+    countdownType: '#fcfcfc',
     prayerName: '#ffffff',
-    countdownTimer: '#fde047',
+    countdownTimer: '#fcfbf8',
     prayerNamesBar: '#ffffff',
-    adhanTimes: '#a7f3d0',
-    iqamahTimes: '#fde68a',
+    adhanTimes: '#f9fafa',
+    iqamahTimes: '#ffffff',
     duasTitle: '#ffffff',
     duasText: '#ffffff',
     announcementsTitle: '#ffffff',
@@ -103,8 +103,8 @@ export const DEFAULT_SETTINGS: Settings = {
   layout: {
     mosqueName: {
       xOffset: 0,
-      yOffset: 0,
-      scale: 1
+      yOffset: 7,
+      scale: 1.7
     },
     mainTime: {
       xOffset: 0,
@@ -113,7 +113,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     gregorianHijriDate: {
       xOffset: 0,
-      yOffset: 0,
+      yOffset: -35,
       scale: 1
     },
     mainClock: {
@@ -123,7 +123,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     countdownCircle: {
       xOffset: 0,
-      yOffset: 0,
+      yOffset: -3,
       scale: 1
     },
     duasPanel: {
@@ -144,18 +144,18 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   iqamahDelays: {
     fajr: 20,
-    sunrise: 0,
+    sunrise: 10,
     dhuhr: 10,
     asr: 10,
     maghrib: 5,
     isha: 10
   },
   prayerTimeAdjustments: {
-    fajr: 0,
-    dhuhr: 0,
-    asr: 0,
-    maghrib: 0,
-    isha: 0
+    fajr: 20,
+    dhuhr: 20,
+    asr: 20,
+    maghrib: 10,
+    isha: 20
   },
   duas: [
     'اللهم اغفر لي ذنبي وخطئي وجهلي',
@@ -176,10 +176,10 @@ export const DEFAULT_SETTINGS: Settings = {
   prayerDuration: {
     fajr: 10,
     sunrise: 0,
-    dhuhr: 15,
+    dhuhr: 10,
     asr: 10,
     maghrib: 10,
-    isha: 15
+    isha: 10
   },
   enablePostPrayerDhikrScreen: true,
   postPrayerDhikrDuration: 5,
@@ -193,6 +193,7 @@ export const DEFAULT_SETTINGS: Settings = {
 ربِ قِنِي عذابَك يوم تبعثُ عبادك.
 اللهم اغفر لي ما قدمتُ وما أخرتُ، وما أسررتُ وما أعلنتُ، وما أسرفتُ، وما أنت أعلم به مني، أنت المُقدِّم وأنت المُؤخر، لا إله إلا أنت.
 بعد الفجر والمغرب: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد، يُحيي ويُميت، وهو على كل شيء قدير. (10) مرات.`,
+  postPrayerDhikrScreenHeight: 75,
   showDuasPanel: true,
   showAnnouncementsPanel: true
 };

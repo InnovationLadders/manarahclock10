@@ -137,6 +137,7 @@ export interface Settings {
   enablePostPrayerDhikrScreen: boolean;
   postPrayerDhikrDuration: number;
   postPrayerDhikrText: string;
+  postPrayerDhikrScreenHeight: number;
   showDuasPanel: boolean;
   showAnnouncementsPanel: boolean;
 }
@@ -293,7 +294,7 @@ export const COUNTRY_CALCULATION_METHOD_MAP: Record<string, string> = {
 };
 
 export const COUNTRY_MADHAB_MAP: Record<string, string> = {
-  'SA': 'Hanafi',
+  'SA': 'Shafi',
   'AE': 'Maliki',
   'KW': 'Maliki',
   'QA': 'Hanafi',
