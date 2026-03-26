@@ -1,5 +1,5 @@
 # robots.txt for ساعة منارة للمساجد
-# https://manarah-display.netlify.app/robots.txt
+# https://manarahclock.net/robots.txt
 
 User-agent: *
 Allow: /
@@ -10,7 +10,7 @@ Disallow: /admin-panel
 Disallow: /admin-login
 Disallow: /admin
 
-Sitemap: https://manarah-display.netlify.app/sitemap.xml
+Sitemap: https://manarahclock.net/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
