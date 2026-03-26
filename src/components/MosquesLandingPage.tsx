@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosque, Star, Calendar, BookOpen, ChevronDown, RefreshCw, Mail, Phone, Map as MapIcon } from 'lucide-react';
+import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosque, Star, Calendar, BookOpen, ChevronDown, RefreshCw, Mail, Phone, Map as MapIcon, Shield } from 'lucide-react';
 import { MosqueData, MADHABS } from '../types';
 import { getAllMosques, getAvailableCities, getCacheInfo, clearLocalCache } from '../utils/mosqueUtils';
 import SEOHelmet from './SEOHelmet';
@@ -562,9 +562,21 @@ const MosquesLandingPage: React.FC = () => {
               </div>
 
               <div className="mt-6 pt-6 border-t border-white/10">
-                <p className="text-white/50 text-sm sm:text-base" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                  الإصدار 2.0
-                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <p className="text-white/50 text-sm sm:text-base" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                    الإصدار 2.0
+                  </p>
+                  <span className="hidden sm:inline text-white/30">•</span>
+                  <Link
+                    to="/admin-login"
+                    className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-red-400/50 rounded-xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    <Shield className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
+                    <span className="text-white/70 group-hover:text-white text-sm sm:text-base transition-colors" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                      دخول الأدمن
+                    </span>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
