@@ -171,7 +171,22 @@ export const getScreenState = (prayerTimes: PrayerTimes, settings: Settings): Sc
   };
 };
 
-export const getHijriDate = (): string => {
+const getHijriDateUmmAlQura = (): string => {
+  const date = new Date();
+  try {
+    const formatted = date.toLocaleDateString('ar-SA', {
+      calendar: 'islamic-umalqura',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    return formatted.includes('هـ') ? formatted : `${formatted} هـ`;
+  } catch (error) {
+    return getHijriDateManual();
+  }
+};
+
+const getHijriDateManual = (): string => {
   const today = new Date();
 
   const referenceGregorian = new Date(2000, 0, 1);
@@ -220,6 +235,10 @@ export const getHijriDate = (): string => {
   ];
 
   return `${hijriDay} ${hijriMonths[hijriMonth - 1]} ${hijriYear} هـ`;
+};
+
+export const getHijriDate = (): string => {
+  return getHijriDateUmmAlQura();
 };
 
 const isHijriLeapYear = (year: number): boolean => {
