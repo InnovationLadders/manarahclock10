@@ -31,7 +31,8 @@ export default defineConfig({
           'manarah1.png',
           'apple-touch-icon.png',
           'favicon.ico',
-          'pwa-512x512.png'
+          'pwa-512x512.png',
+          'logo_MANARAH_25.svg'
         ];
 
         for (const file of allowedFiles) {
