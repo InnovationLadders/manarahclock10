@@ -66,10 +66,10 @@ const DuasPanel: React.FC<DuasPanelProps> = ({ duas, settings, isSmallDisplay = 
 
   return (
     <div className="h-full flex flex-col">
-      <div className="h-full">
+      <div className="h-full flex flex-col">
         <h2
           className={`text-center ${
-            isSmallDisplay ? 'mb-2 md:mb-3' : 'mb-3 md:mb-4 lg:mb-6'
+            isSmallDisplay ? 'mb-3 md:mb-4' : 'mb-4 md:mb-6 lg:mb-8'
           }`}
           style={{
             fontFamily: `${settings.fontSettings.duasFontFamily}, serif`,
@@ -82,38 +82,18 @@ const DuasPanel: React.FC<DuasPanelProps> = ({ duas, settings, isSmallDisplay = 
         </h2>
 
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <p
-              ref={textRef}
-              className="leading-relaxed"
-              style={{
-                fontFamily: `${settings.fontSettings.duasFontFamily}, serif`,
-                fontWeight: settings.fontSettings.duasFontWeight,
-                fontSize: `${dynamicFontSize}px`,
-                color: settings.colors.duasText
-              }}
-            >
-              {duas[currentIndex]}
-            </p>
-            
-            {/* مؤشر الصفحات */}
-            <div className={`flex justify-center space-x-2 space-x-reverse ${
-              isSmallDisplay ? 'mt-2 md:mt-3' : 'mt-3 md:mt-4 lg:mt-6'
-            }`}>
-              {duas.map((_, index) => (
-                <div
-                  key={index}
-                  className={`rounded-full transition-all duration-300 ${
-                    index === currentIndex ? 'bg-white' : 'bg-white/30'
-                  }`}
-                  style={{
-                    width: isSmallDisplay ? 'clamp(6px, 0.5vw, 8px)' : 'clamp(8px, 0.8vw, 12px)',
-                    height: isSmallDisplay ? 'clamp(6px, 0.5vw, 8px)' : 'clamp(8px, 0.8vw, 12px)'
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          <p
+            ref={textRef}
+            className="leading-relaxed text-center"
+            style={{
+              fontFamily: `${settings.fontSettings.duasFontFamily}, serif`,
+              fontWeight: settings.fontSettings.duasFontWeight,
+              fontSize: `${dynamicFontSize}px`,
+              color: settings.colors.duasText
+            }}
+          >
+            {duas[currentIndex]}
+          </p>
         </div>
       </div>
     </div>
