@@ -181,15 +181,13 @@ const MosquesLandingPage: React.FC = () => {
               {/* Logo and Title Section */}
               <div className="flex items-center gap-3 sm:gap-4 md:gap-6 w-full lg:w-auto justify-between lg:justify-start">
                 <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
-                  <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl sm:rounded-2xl md:rounded-3xl shadow-xl md:shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                    <img
-                      src="/logo_MANARAH_25.svg"
-                      alt="ساعة منارة - ساعة المسجد الذكية"
-                      width="40"
-                      height="40"
-                      className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain drop-shadow-lg"
-                    />
-                  </div>
+                  <img
+                    src="/logo_MANARAH_25.svg"
+                    alt="ساعة منارة - ساعة المسجد الذكية"
+                    width="80"
+                    height="80"
+                    className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
+                  />
                   <div>
                     <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-0 sm:mb-1 md:mb-2 drop-shadow-2xl" style={{ fontFamily: 'Amiri, serif' }}>
                       ساعة منارة للمساجد
