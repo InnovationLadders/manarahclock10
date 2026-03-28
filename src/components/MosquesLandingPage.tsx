@@ -183,7 +183,7 @@ const MosquesLandingPage: React.FC = () => {
                 <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
                   <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl sm:rounded-2xl md:rounded-3xl shadow-xl md:shadow-2xl transform hover:scale-105 transition-transform duration-300">
                     <img
-                      src="/logo MANARAH 25.svg"
+                      src="/logo_MANARAH_25.svg"
                       alt="ساعة منارة - ساعة المسجد الذكية"
                       width="40"
                       height="40"
@@ -537,7 +537,7 @@ const MosquesLandingPage: React.FC = () => {
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl shadow-xl">
                   <img
-                    src="/logo MANARAH 25.svg"
+                    src="/logo_MANARAH_25.svg"
                     alt="ساعة منارة - ساعة المسجد الذكية"
                     width="32"
                     height="32"

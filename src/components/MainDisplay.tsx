@@ -222,7 +222,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
       {/* الشعار في الزاوية العلوية اليمنى */}
       <div className="absolute top-4 right-4 z-50">
         <img
-          src="/logo MANARAH 25.svg"
+          src="/logo_MANARAH_25.svg"
           alt="شعار منارة"
           className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 object-contain drop-shadow-2xl"
           style={{

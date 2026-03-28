@@ -212,7 +212,7 @@ const MainApp: React.FC = () => {
           {/* الشعار */}
           <div className="mb-8 flex justify-center">
             <img
-              src="/logo MANARAH 25.svg"
+              src="/logo_MANARAH_25.svg"
               alt="شعار منارة"
               className="w-24 h-24 object-contain drop-shadow-2xl animate-pulse"
             />
