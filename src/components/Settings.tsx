@@ -31,6 +31,7 @@ import { Settings as SettingsType, BackgroundItem, COUNTRIES, CALCULATION_METHOD
 import { getSettings, saveSettings, uploadBackgroundImage, addBackgroundToSettings, removeBackgroundFromSettings, deleteBackgroundImage, updateUserPassword } from '../utils/storage';
 import LayoutColorSettings from './LayoutColorSettings';
 import LocationPicker from './LocationPicker';
+import { getCitiesByCountry, getCityCoordinates } from '../data/cities';
 
 interface SettingsProps {
   onBack: () => void;
@@ -266,6 +267,58 @@ const Settings: React.FC<SettingsProps> = ({
     });
   };
 
+  // Get available cities for selected country
+  const availableCities = settings
+    ? getCitiesByCountry(COUNTRIES.find(c => c.name === settings.location.country)?.key || 'SA')
+    : [];
+
+  // Handle country change
+  const handleCountryChange = (countryName: string) => {
+    if (!settings) return;
+
+    const countryKey = COUNTRIES.find(c => c.name === countryName)?.key || 'SA';
+    const cities = getCitiesByCountry(countryKey);
+
+    setSettings({
+      ...settings,
+      location: {
+        ...settings.location,
+        country: countryName,
+        city: cities.length > 0 ? cities[0].name : '',
+        latitude: cities.length > 0 ? cities[0].latitude : 0,
+        longitude: cities.length > 0 ? cities[0].longitude : 0,
+        manualCoordinates: false
+      }
+    });
+  };
+
+  // Handle city change
+  const handleCityChange = (cityName: string) => {
+    if (!settings) return;
+
+    if (settings.location.manualCoordinates) {
+      updateLocation('city', cityName);
+      return;
+    }
+
+    const countryKey = COUNTRIES.find(c => c.name === settings.location.country)?.key || 'SA';
+    const coords = getCityCoordinates(countryKey, cityName);
+
+    if (coords) {
+      setSettings({
+        ...settings,
+        location: {
+          ...settings.location,
+          city: cityName,
+          latitude: coords.latitude,
+          longitude: coords.longitude
+        }
+      });
+    } else {
+      updateLocation('city', cityName);
+    }
+  };
+
   const updateIqamahDelay = (prayer: string, delay: number) => {
     if (!settings) return;
     setSettings({
@@ -467,24 +520,11 @@ const Settings: React.FC<SettingsProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-white/90 text-sm font-medium mb-2">
-                    المدينة
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.location.city}
-                    onChange={(e) => updateLocation('city', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                    placeholder="الرياض"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-white/90 text-sm font-medium mb-2">
                     الدولة
                   </label>
                   <select
                     value={settings.location.country}
-                    onChange={(e) => updateLocation('country', e.target.value)}
+                    onChange={(e) => handleCountryChange(e.target.value)}
                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   >
                     {COUNTRIES.map(country => (
@@ -494,6 +534,27 @@ const Settings: React.FC<SettingsProps> = ({
                     ))}
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-white/90 text-sm font-medium mb-2">
+                    المدينة
+                  </label>
+                  <select
+                    value={settings.location.city}
+                    onChange={(e) => handleCityChange(e.target.value)}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  >
+                    {availableCities.length > 0 ? (
+                      availableCities.map(city => (
+                        <option key={city.name} value={city.name} className="bg-blue-900">
+                          {city.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" className="bg-blue-900">لا توجد مدن متاحة</option>
+                    )}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -501,13 +562,25 @@ const Settings: React.FC<SettingsProps> = ({
                   <label className="block text-white/90 text-sm font-medium">
                     الموقع الجغرافي (خط العرض والطول)
                   </label>
-                  <button
-                    onClick={() => setShowLocationPicker(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-200 rounded-lg transition-all duration-300 text-sm"
-                  >
-                    <MapPin className="w-4 h-4" />
-                    اختيار من الخريطة
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => updateLocation('manualCoordinates', !settings.location.manualCoordinates)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-300 text-sm ${
+                        settings.location.manualCoordinates
+                          ? 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-200'
+                          : 'bg-white/10 border border-white/20 text-white/70'
+                      }`}
+                    >
+                      {settings.location.manualCoordinates ? 'تعديل يدوي مفعل' : 'تفعيل التعديل اليدوي'}
+                    </button>
+                    <button
+                      onClick={() => setShowLocationPicker(true)}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-200 rounded-lg transition-all duration-300 text-sm"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      اختيار من الخريطة
+                    </button>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -517,7 +590,8 @@ const Settings: React.FC<SettingsProps> = ({
                       step="any"
                       value={settings.location.latitude}
                       onChange={(e) => updateLocation('latitude', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent font-mono"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent font-mono disabled:opacity-50"
+                      disabled={!settings.location.manualCoordinates}
                     />
                   </div>
                   <div>
@@ -527,10 +601,18 @@ const Settings: React.FC<SettingsProps> = ({
                       step="any"
                       value={settings.location.longitude}
                       onChange={(e) => updateLocation('longitude', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent font-mono"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent font-mono disabled:opacity-50"
+                      disabled={!settings.location.manualCoordinates}
                     />
                   </div>
                 </div>
+                {settings.location.manualCoordinates && (
+                  <div className="mt-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <p className="text-yellow-200 text-sm">
+                      <strong>ملاحظة:</strong> عند تفعيل التعديل اليدوي، يمكنك تغيير الإحداثيات بشكل دقيق لتحديد موقع المسجد بالضبط.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* طريقة الحساب والمذهب */}

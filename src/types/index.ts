@@ -46,6 +46,7 @@ export interface Settings {
     longitude: number;
     city: string;
     country: string;
+    manualCoordinates?: boolean;
   };
   calculationMethod: 'UmmAlQura' | 'MuslimWorldLeague' | 'Egyptian' | 'Karachi' | 'NorthAmerica' | 'Dubai' | 'Kuwait' | 'Qatar' | 'Singapore' | 'Turkey' | 'Tehran' | 'MoonsightingCommittee';
   madhab: 'Shafi' | 'Hanafi' | 'Maliki';
@@ -153,6 +154,7 @@ export interface MosqueData {
     longitude: number;
     city: string;
     country: string;
+    manualCoordinates?: boolean;
   };
   createdAt: Date;
   isActive: boolean;

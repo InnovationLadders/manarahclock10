@@ -17,6 +17,7 @@ import {
 import { createMosqueUser } from '../utils/storage';
 import { getAllMosques } from '../utils/mosqueUtils';
 import { MosqueData, COUNTRIES } from '../types';
+import { getCitiesByCountry, getCityCoordinates } from '../data/cities';
 
 interface AdminPanelProps {
   user: User | null;
@@ -40,8 +41,51 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
     city: '',
     country: 'المملكة العربية السعودية',
     latitude: 24.7136,
-    longitude: 46.6753
+    longitude: 46.6753,
+    manualCoordinates: false
   });
+
+  // Get available cities for selected country
+  const availableCities = getCitiesByCountry(
+    COUNTRIES.find(c => c.name === newMosque.country)?.key || 'SA'
+  );
+
+  // Handle country change
+  const handleCountryChange = (countryName: string) => {
+    const countryKey = COUNTRIES.find(c => c.name === countryName)?.key || 'SA';
+    const cities = getCitiesByCountry(countryKey);
+
+    setNewMosque({
+      ...newMosque,
+      country: countryName,
+      city: cities.length > 0 ? cities[0].name : '',
+      latitude: cities.length > 0 ? cities[0].latitude : 0,
+      longitude: cities.length > 0 ? cities[0].longitude : 0,
+      manualCoordinates: false
+    });
+  };
+
+  // Handle city change
+  const handleCityChange = (cityName: string) => {
+    if (newMosque.manualCoordinates) {
+      setNewMosque({ ...newMosque, city: cityName });
+      return;
+    }
+
+    const countryKey = COUNTRIES.find(c => c.name === newMosque.country)?.key || 'SA';
+    const coords = getCityCoordinates(countryKey, cityName);
+
+    if (coords) {
+      setNewMosque({
+        ...newMosque,
+        city: cityName,
+        latitude: coords.latitude,
+        longitude: coords.longitude
+      });
+    } else {
+      setNewMosque({ ...newMosque, city: cityName });
+    }
+  };
 
   // Load mosques on component mount
   useEffect(() => {
@@ -83,14 +127,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
       setSuccessMessage(`تم إنشاء حساب المسجد "${newMosque.mosqueName}" بنجاح!`);
       
       // Reset form
+      const defaultCountryKey = 'SA';
+      const defaultCities = getCitiesByCountry(defaultCountryKey);
       setNewMosque({
         email: '',
         password: '',
         mosqueName: '',
-        city: '',
+        city: defaultCities.length > 0 ? defaultCities[0].name : '',
         country: 'المملكة العربية السعودية',
-        latitude: 24.7136,
-        longitude: 46.6753
+        latitude: defaultCities.length > 0 ? defaultCities[0].latitude : 24.7136,
+        longitude: defaultCities.length > 0 ? defaultCities[0].longitude : 46.6753,
+        manualCoordinates: false
       });
 
       // Reload mosques list
@@ -270,25 +317,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
                       />
                     </div>
 
-                    {/* المدينة */}
-                    <div>
-                      <label className="block text-white/90 text-sm font-medium mb-2">
-                        <MapPin className="w-4 h-4 inline mr-2" />
-                        المدينة
-                      </label>
-                      <input
-                        type="text"
-                        value={newMosque.city}
-                        onChange={(e) => setNewMosque({ ...newMosque, city: e.target.value })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
-                        placeholder="الرياض"
-                        required
-                        disabled={creating}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* الدولة */}
                     <div>
                       <label className="block text-white/90 text-sm font-medium mb-2">
@@ -296,7 +324,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
                       </label>
                       <select
                         value={newMosque.country}
-                        onChange={(e) => setNewMosque({ ...newMosque, country: e.target.value })}
+                        onChange={(e) => handleCountryChange(e.target.value)}
                         className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
                         disabled={creating}
                       >
@@ -307,7 +335,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
                         ))}
                       </select>
                     </div>
+                  </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                    {/* المدينة */}
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">
+                        <MapPin className="w-4 h-4 inline mr-2" />
+                        المدينة
+                      </label>
+                      <select
+                        value={newMosque.city}
+                        onChange={(e) => handleCityChange(e.target.value)}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                        required
+                        disabled={creating}
+                      >
+                        {availableCities.length > 0 ? (
+                          availableCities.map(city => (
+                            <option key={city.name} value={city.name} className="bg-red-900">
+                              {city.name}
+                            </option>
+                          ))
+                        ) : (
+                          <option value="" className="bg-red-900">لا توجد مدن متاحة</option>
+                        )}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* خط العرض */}
                     <div>
                       <label className="block text-white/90 text-sm font-medium mb-2">
@@ -318,8 +375,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
                         step="any"
                         value={newMosque.latitude}
                         onChange={(e) => setNewMosque({ ...newMosque, latitude: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
-                        disabled={creating}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent disabled:opacity-50"
+                        disabled={creating || !newMosque.manualCoordinates}
                       />
                     </div>
 
@@ -333,11 +390,38 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
                         step="any"
                         value={newMosque.longitude}
                         onChange={(e) => setNewMosque({ ...newMosque, longitude: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
-                        disabled={creating}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent disabled:opacity-50"
+                        disabled={creating || !newMosque.manualCoordinates}
                       />
                     </div>
+
+                    {/* تعديل الإحداثيات يدوياً */}
+                    <div>
+                      <label className="block text-white/90 text-sm font-medium mb-2">
+                        تعديل يدوي
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setNewMosque({ ...newMosque, manualCoordinates: !newMosque.manualCoordinates })}
+                        className={`w-full px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+                          newMosque.manualCoordinates
+                            ? 'bg-yellow-500/20 text-yellow-200 border border-yellow-500/30'
+                            : 'bg-white/10 text-white/70 border border-white/20'
+                        }`}
+                        disabled={creating}
+                      >
+                        {newMosque.manualCoordinates ? 'مفعل' : 'معطل'}
+                      </button>
+                    </div>
                   </div>
+
+                  {newMosque.manualCoordinates && (
+                    <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                      <p className="text-yellow-200 text-sm">
+                        <strong>ملاحظة:</strong> عند تفعيل التعديل اليدوي، يمكنك تغيير الإحداثيات بشكل دقيق لتحديد موقع المسجد بالضبط.
+                      </p>
+                    </div>
+                  )}
 
                   {/* زر الإنشاء */}
                   <button
