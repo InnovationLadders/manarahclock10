@@ -20,14 +20,9 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
   ];
 
   if (isVerticalLayout) {
-    // تخطيط خاص للوضع العمودي - ثلاثة أعمدة منفصلة
     return (
-      <div className={`bg-black/50 backdrop-blur-sm border-t border-white/30 ${
-        isLargeDisplay ? 'border-2 border-white/40 rounded-2xl mx-4 md:mx-8' : ''
-      }`}>
-        <div className={`px-4 md:px-6 lg:px-8 ${
-          isVerticalLayout ? 'py-4 md:py-6 lg:py-8' : (isLargeDisplay ? 'py-8 md:py-12 lg:py-16' : 'py-3 md:py-4 lg:py-6')
-        }`}>
+      <div>
+        <div className="px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8">
           {/* رؤوس الأعمدة */}
           <div className="grid grid-cols-3 gap-x-8 md:gap-x-12 lg:gap-x-16 mb-4 md:mb-6 lg:mb-8">
             <div className="text-right">
@@ -132,9 +127,7 @@ const PrayerTimesBar: React.FC<PrayerTimesBarProps> = ({ prayerTimes, settings, 
   }
 
   return (
-    <div className={`bg-black/50 backdrop-blur-sm border-t border-white/30 ${
-      isLargeDisplay ? 'border-2 border-white/40 rounded-2xl mx-4 md:mx-8' : ''
-    }`}>
+    <div>
       <div className={`grid grid-cols-6 gap-2 md:gap-3 lg:gap-4 px-4 md:px-6 lg:px-8 ${
         isLargeDisplay ? 'py-8 md:py-12 lg:py-16' : 'py-3 md:py-4 lg:py-6'
       }`}>

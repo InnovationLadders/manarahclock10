@@ -81,14 +81,6 @@ const PostPrayerDhikrScreen: React.FC<PostPrayerDhikrScreenProps> = ({
         </button>
       )}
 
-      {/* خلفية زخرفية */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-32 h-32 border-4 border-black/30 rotate-45 rounded-lg"></div>
-        <div className="absolute top-32 right-20 w-24 h-24 border-4 border-black/20 rotate-12 rounded-full"></div>
-        <div className="absolute bottom-20 left-32 w-40 h-40 border-4 border-black/25 -rotate-12 rounded-lg"></div>
-        <div className="absolute bottom-40 right-16 w-28 h-28 border-4 border-black/20 rotate-45 rounded-full"></div>
-      </div>
-
       {/* العنوان */}
       <div className="flex-shrink-0 text-center py-4 md:py-6 lg:py-8">
         <h1 

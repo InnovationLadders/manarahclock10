@@ -66,9 +66,7 @@ const DuasPanel: React.FC<DuasPanelProps> = ({ duas, settings, isSmallDisplay = 
 
   return (
     <div className="h-full flex flex-col">
-      <div className={`bg-gradient-to-b from-emerald-600/20 to-teal-600/20 backdrop-blur-sm rounded-2xl border border-white/20 h-full ${
-        isSmallDisplay ? 'p-2 md:p-3' : 'p-3 md:p-4 lg:p-6'
-      }`}>
+      <div className="h-full">
         <h2
           className={`text-center ${
             isSmallDisplay ? 'mb-2 md:mb-3' : 'mb-3 md:mb-4 lg:mb-6'
