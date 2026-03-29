@@ -458,28 +458,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
                   تصدير ملفات السيو (SEO Files)
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <button
                     onClick={downloadSitemapIndex}
-                    className="flex items-center justify-center gap-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 border border-purple-500/30 rounded-xl px-4 py-3 transition-all duration-300"
+                    className="flex items-center justify-center gap-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-200 border border-orange-500/30 rounded-lg px-3 py-2 text-sm transition-all duration-300"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="w-3.5 h-3.5" />
                     <span>sitemap-index.xml</span>
                   </button>
 
                   <button
                     onClick={downloadStaticSitemap}
-                    className="flex items-center justify-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 border border-blue-500/30 rounded-xl px-4 py-3 transition-all duration-300"
+                    className="flex items-center justify-center gap-2 bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/30 rounded-lg px-3 py-2 text-sm transition-all duration-300"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="w-3.5 h-3.5" />
                     <span>sitemap-static.xml</span>
                   </button>
 
                   <button
                     onClick={() => downloadMosquesSitemap(mosques)}
-                    className="flex items-center justify-center gap-2 bg-green-500/20 hover:bg-green-500/30 text-green-200 border border-green-500/30 rounded-xl px-4 py-3 transition-all duration-300"
+                    className="flex items-center justify-center gap-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 border border-emerald-500/30 rounded-lg px-3 py-2 text-sm transition-all duration-300"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="w-3.5 h-3.5" />
                     <span>sitemap-mosques.xml</span>
                   </button>
                 </div>
