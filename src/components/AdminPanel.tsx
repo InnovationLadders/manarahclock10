@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
-import { 
-  ArrowRight, 
-  Shield, 
-  Users, 
-  UserPlus, 
+import {
+  ArrowRight,
+  Shield,
+  Users,
+  UserPlus,
   Settings as SettingsIcon,
   CheckCircle,
   AlertCircle,
@@ -12,12 +12,19 @@ import {
   X,
   MapPin,
   Mail,
-  Lock
+  Lock,
+  Download,
+  FileText
 } from 'lucide-react';
 import { createMosqueUser } from '../utils/storage';
 import { getAllMosques } from '../utils/mosqueUtils';
 import { MosqueData, COUNTRIES } from '../types';
 import { getCitiesByCountry, getCityCoordinates } from '../data/cities';
+import {
+  downloadSitemapIndex,
+  downloadStaticSitemap,
+  downloadMosquesSitemap
+} from '../utils/generateSitemap';
 
 interface AdminPanelProps {
   user: User | null;
@@ -442,6 +449,46 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ user, onLogout, onBack }) => {
                     )}
                   </button>
                 </form>
+              </div>
+
+              {/* تصدير ملفات السيو */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-purple-400" />
+                  تصدير ملفات السيو (SEO Files)
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <button
+                    onClick={downloadSitemapIndex}
+                    className="flex items-center justify-center gap-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 border border-purple-500/30 rounded-xl px-4 py-3 transition-all duration-300"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>sitemap-index.xml</span>
+                  </button>
+
+                  <button
+                    onClick={downloadStaticSitemap}
+                    className="flex items-center justify-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 border border-blue-500/30 rounded-xl px-4 py-3 transition-all duration-300"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>sitemap-static.xml</span>
+                  </button>
+
+                  <button
+                    onClick={() => downloadMosquesSitemap(mosques)}
+                    className="flex items-center justify-center gap-2 bg-green-500/20 hover:bg-green-500/30 text-green-200 border border-green-500/30 rounded-xl px-4 py-3 transition-all duration-300"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>sitemap-mosques.xml</span>
+                  </button>
+                </div>
+
+                <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                  <p className="text-blue-200 text-sm">
+                    <strong>ملاحظة:</strong> قم بتحميل هذه الملفات ورفعها إلى مجلد public في الموقع، ثم أرسلها إلى Google Search Console لتحسين الظهور في نتائج البحث.
+                  </p>
+                </div>
               </div>
 
               {/* قائمة المساجد الموجودة */}

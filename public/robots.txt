@@ -10,7 +10,10 @@ Disallow: /admin-panel
 Disallow: /admin-login
 Disallow: /admin
 
-Sitemap: https://manarahclock.net/sitemap.xml
+# Sitemaps
+Sitemap: https://manarahclock.net/sitemap-index.xml
+Sitemap: https://manarahclock.net/sitemap-static.xml
+Sitemap: https://manarahclock.net/sitemap-mosques.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

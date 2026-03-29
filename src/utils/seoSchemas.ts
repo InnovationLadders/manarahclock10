@@ -5,8 +5,8 @@ export const generateOrganizationSchema = () => ({
   '@type': 'Organization',
   name: 'ساعة منارة للمساجد',
   alternateName: 'Manarah Mosque Display',
-  url: 'https://manarah-display.netlify.app',
-  logo: 'https://manarah-display.netlify.app/logo MANARAH25-01.png',
+  url: 'https://manarahclock.net',
+  logo: 'https://manarahclock.net/logo MANARAH25-01.png',
   description: 'نظام ساعة المسجد الذكية من منارة لعرض أوقات الصلاة والأذان بدقة عالية مع محتوى دعوي متنوع',
   contactPoint: {
     '@type': 'ContactPoint',
@@ -33,13 +33,13 @@ export const generateWebSiteSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'ساعة منارة للمساجد',
-  url: 'https://manarah-display.netlify.app',
+  url: 'https://manarahclock.net',
   description: 'ساعة المسجد الذكية لعرض أوقات الصلاة والأذان',
   potentialAction: {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://manarah-display.netlify.app/?search={search_term_string}'
+      urlTemplate: 'https://manarahclock.net/?search={search_term_string}'
     },
     'query-input': 'required name=search_term_string'
   },
@@ -68,7 +68,7 @@ export const generateSoftwareApplicationSchema = () => ({
 export const generateMosqueSchema = (mosque: MosqueData) => ({
   '@context': 'https://schema.org',
   '@type': 'PlaceOfWorship',
-  '@id': `https://manarah-display.netlify.app/mosque/${mosque.id}`,
+  '@id': `https://manarahclock.net/mosque/${mosque.id}`,
   name: mosque.mosqueName,
   description: `ساعة المسجد الذكية لـ ${mosque.mosqueName} - عرض أوقات الصلاة والأذان`,
   image: mosque.imageUrl || 'https://images.pexels.com/photos/2233416/pexels-photo-2233416.jpeg',
@@ -82,7 +82,7 @@ export const generateMosqueSchema = (mosque: MosqueData) => ({
     latitude: mosque.location.latitude,
     longitude: mosque.location.longitude
   },
-  url: `https://manarah-display.netlify.app/mosque/${mosque.id}`,
+  url: `https://manarahclock.net/mosque/${mosque.id}`,
   additionalType: 'https://schema.org/Mosque'
 });
 
@@ -103,8 +103,8 @@ export const generateLocalBusinessSchema = (mosque: MosqueData) => ({
   name: mosque.mosqueName,
   description: `${mosque.mosqueName} - مسجد في ${mosque.location.city}، ${mosque.location.country}`,
   image: mosque.imageUrl || 'https://images.pexels.com/photos/2233416/pexels-photo-2233416.jpeg',
-  '@id': `https://manarah-display.netlify.app/mosque/${mosque.id}`,
-  url: `https://manarah-display.netlify.app/mosque/${mosque.id}`,
+  '@id': `https://manarahclock.net/mosque/${mosque.id}`,
+  url: `https://manarahclock.net/mosque/${mosque.id}`,
   telephone: '+966-55-434-4899',
   address: {
     '@type': 'PostalAddress',
