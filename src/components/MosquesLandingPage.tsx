@@ -4,6 +4,7 @@ import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosq
 import { MosqueData, MADHABS } from '../types';
 import { getAllMosques, getAvailableCities, getCacheInfo, clearLocalCache } from '../utils/mosqueUtils';
 import SEOHelmet from './SEOHelmet';
+import CustomScrollbar from './CustomScrollbar';
 import { generateOrganizationSchema, generateWebSiteSchema, generateSoftwareApplicationSchema } from '../utils/seoSchemas';
 
 const MosquesLandingPage: React.FC = () => {
@@ -22,6 +23,7 @@ const MosquesLandingPage: React.FC = () => {
   const [focusedCardIndex, setFocusedCardIndex] = useState(-1);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isNavigatingWithKeyboard = useRef(false);
 
   // صورة المسجد الافتراضية
@@ -201,7 +203,7 @@ const MosquesLandingPage: React.FC = () => {
   };
 
   return (
-    <div className="landing-page-container" dir="rtl">
+    <div ref={scrollContainerRef} className="landing-page-container" dir="rtl">
       <SEOHelmet
         title="ساعة منارة | ساعة المسجد الذكية لعرض أوقات الصلاة والأذان"
         description="ساعة منارة - ساعة المسجد الذكية والتلفزيونية لعرض أوقات الصلاة والأذان بدقة عالية. نظام متطور لإدارة شاشات المساجد مع عرض الأدعية والإعلانات والمحتوى الدعوي. ساعة مسجد ذكية لجميع المساجد في الوطن العربي."
@@ -645,6 +647,9 @@ const MosquesLandingPage: React.FC = () => {
           </div>
         </footer>
       </div>
+
+      {/* شريط التمرير الجانبي المخصص */}
+      <CustomScrollbar scrollContainerRef={scrollContainerRef} />
     </div>
   );
 };

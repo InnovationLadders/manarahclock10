@@ -75,6 +75,12 @@ body {
   height: 100vh;
   overflow-y: auto;
   scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox - إخفاء شريط التمرير الافتراضي */
+  -ms-overflow-style: none; /* IE10+ - إخفاء شريط التمرير الافتراضي */
+}
+
+.landing-page-container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari - إخفاء شريط التمرير الافتراضي */
 }
 
 /* تحسين التمرير على الأجهزة المحمولة */
