@@ -108,10 +108,25 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /.*\.(png|jpg|jpeg|gif|webp|svg|bmp|ico|mp4|webm|ogg|avi|mov)$/i,
+            urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'firebase-storage-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 90 // 90 days
+              }
+            }
+          },
+          {
+            urlPattern: /.*\.(png|jpg|jpeg|gif|webp|svg|bmp|ico|mp4|webm|ogg|avi|mov)(\?.*)?$/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'media-files-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 90 // 90 days
+              }
             }
           }
         ]

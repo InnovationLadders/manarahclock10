@@ -8,7 +8,7 @@ import PrayerTimesBar from './PrayerTimesBar';
 import CountdownRectangle from './CountdownRectangle';
 import DuasPanel from './DuasPanel';
 import AnnouncementsPanel from './AnnouncementsPanel';
-import { getCachedBackground, cacheBackground, getBackgroundToDisplay } from '../utils/backgroundCache';
+import { getCachedBackground, cacheBackground, getBackgroundToDisplay, cacheBackgroundsFromSettings, restoreBlobUrlsFromCache } from '../utils/backgroundCache';
 
 interface MainDisplayProps {
   user?: User | null;
@@ -24,6 +24,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   const [resolvedBgSrc, setResolvedBgSrc] = useState<string>('');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const lastBgUrlRef = useRef<string>('');
+  const hasProactivelyCachedRef = useRef(false);
 
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes, settings) : null;
   const isPortrait = settings.displayMode === 'portrait';
@@ -39,6 +40,21 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  // استعادة روابط الخلفيات المخزنة من Cache API عند بدء التشغيل
+  useEffect(() => {
+    restoreBlobUrlsFromCache();
+  }, []);
+
+  // تخزين استباقي لكل خلفيات المسجد عند تحميل الإعدادات
+  useEffect(() => {
+    if (hasProactivelyCachedRef.current) return;
+    if (!settings.backgrounds || settings.backgrounds.length === 0) return;
+    hasProactivelyCachedRef.current = true;
+
+    const backgroundsToCache = [...settings.backgrounds];
+    cacheBackgroundsFromSettings(backgroundsToCache).catch(() => {});
+  }, [settings.backgrounds]);
   
   // تدوير الخلفيات تلقائياً
   useEffect(() => {
@@ -73,37 +89,39 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   
   const currentBackground = getCurrentBackground();
 
-  // تحديد مصدر الخلفية: المحلية أولاً ثم الإنترنت
+  // تحديد مصدر الخلفية: الكاش المحلي أولاً دائماً ثم الإنترنت
   useEffect(() => {
     if (!currentBackground) return;
     const bgUrl = currentBackground.url;
     if (bgUrl === lastBgUrlRef.current && resolvedBgSrc) return;
     lastBgUrlRef.current = bgUrl;
 
-    const { src, isCached } = getBackgroundToDisplay(bgUrl, isOnline);
-    if (src) {
-      setResolvedBgSrc(src);
+    // التحقق من الكاش المحلي أولاً دائماً (سواء متصل أو غير متصل)
+    const cached = getCachedBackground(bgUrl);
+    if (cached) {
+      setResolvedBgSrc(cached);
       setBackgroundLoadError(false);
-    } else if (!isOnline) {
-      // غير متصل ولا توجد نسخة محلية
-      const cached = getCachedBackground(bgUrl);
-      if (cached) {
-        setResolvedBgSrc(cached);
-        setBackgroundLoadError(false);
-      } else {
-        setResolvedBgSrc('');
-        setBackgroundLoadError(true);
+      // محاولة تحديث الكاش من الإنترنت في الخلفية إذا كان متصلاً
+      if (isOnline) {
+        cacheBackground(bgUrl, currentBackground.type).catch(() => {});
       }
-    } else {
+      return;
+    }
+
+    // لا يوجد كاش محلي
+    if (isOnline) {
       setResolvedBgSrc(bgUrl);
       setBackgroundLoadError(false);
+    } else {
+      setResolvedBgSrc('');
+      setBackgroundLoadError(true);
     }
   }, [currentBackground, isOnline, resolvedBgSrc]);
 
   // تخزين الخلفية محلياً عند نجاح التحميل
   const handleBackgroundLoad = () => {
     setBackgroundLoadError(false);
-    if (currentBackground && isOnline) {
+    if (currentBackground) {
       cacheBackground(currentBackground.url, currentBackground.type).catch(() => {});
     }
   };
