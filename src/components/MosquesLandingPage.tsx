@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Search, Filter, Clock, Users, Globe, ExternalLink, Fuel as Mosque, Star, Calendar, BookOpen, ChevronDown, RefreshCw, Mail, Phone, Map as MapIcon, Shield } from 'lucide-react';
 import { MosqueData, MADHABS } from '../types';
@@ -19,6 +19,10 @@ const MosquesLandingPage: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [cacheInfo, setCacheInfo] = useState({ hasCache: false, cacheAge: 0, mosquesCount: 0 });
+  const [focusedCardIndex, setFocusedCardIndex] = useState(-1);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isNavigatingWithKeyboard = useRef(false);
 
   // صورة المسجد الافتراضية
   const DEFAULT_MOSQUE_IMAGE = 'https://images.pexels.com/photos/2233416/pexels-photo-2233416.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop';
@@ -86,6 +90,11 @@ const MosquesLandingPage: React.FC = () => {
   };
 
   // تطبيق الفلاتر
+  // إعادة تعيين التحديد عند تغيير الفلاتر
+  useEffect(() => {
+    setFocusedCardIndex(-1);
+  }, [selectedCity, selectedCountry, searchTerm]);
+
   useEffect(() => {
     let filtered = mosques;
 
@@ -114,6 +123,55 @@ const MosquesLandingPage: React.FC = () => {
   const openMosqueDisplay = (mosqueId: string) => {
     window.location.href = `/mosque/${mosqueId}`;
   };
+
+  // معالجة أزرار ريموت التلفزيون والكيبورد للتنقل بين المساجد
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (filteredMosques.length === 0) return;
+
+    const currentIndex = focusedCardIndex < 0 ? 0 : focusedCardIndex;
+
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowRight': {
+        e.preventDefault();
+        isNavigatingWithKeyboard.current = true;
+        const nextIndex = Math.min(currentIndex + 1, filteredMosques.length - 1);
+        setFocusedCardIndex(nextIndex);
+        break;
+      }
+      case 'ArrowUp':
+      case 'ArrowLeft': {
+        e.preventDefault();
+        isNavigatingWithKeyboard.current = true;
+        const prevIndex = Math.max(currentIndex - 1, 0);
+        setFocusedCardIndex(prevIndex);
+        break;
+      }
+      case 'Enter':
+      case ' ': {
+        if (focusedCardIndex >= 0 && focusedCardIndex < filteredMosques.length) {
+          e.preventDefault();
+          openMosqueDisplay(filteredMosques[focusedCardIndex].id);
+        }
+        break;
+      }
+    }
+  }, [filteredMosques, focusedCardIndex]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  // تمرير البطاقة المحددة لتكون مرئية عند التنقل بالريموت
+  useEffect(() => {
+    if (focusedCardIndex >= 0 && isNavigatingWithKeyboard.current) {
+      const cardEl = cardRefs.current[focusedCardIndex];
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [focusedCardIndex]);
 
   const resetFilters = () => {
     setSelectedCity('');
@@ -374,14 +432,21 @@ const MosquesLandingPage: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredMosques.map((mosque) => (
+              <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" tabIndex={-1}>
+                {filteredMosques.map((mosque, index) => (
                   <div
                     key={mosque.id}
-                    className="group bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden transition-all duration-300 cursor-pointer hover:bg-white/20 hover:scale-105 hover:shadow-2xl hover:border-emerald-400/50 transform"
+                    ref={(el) => { cardRefs.current[index] = el; }}
+                    tabIndex={0}
+                    className={`group bg-white/10 backdrop-blur-sm rounded-2xl border overflow-hidden transition-all duration-300 cursor-pointer transform focus:outline-none ${
+                      focusedCardIndex === index
+                        ? 'border-emerald-400 ring-4 ring-emerald-400/60 scale-105 shadow-2xl bg-white/20'
+                        : 'border-white/20 hover:bg-white/20 hover:scale-105 hover:shadow-2xl hover:border-emerald-400/50'
+                    }`}
                     onClick={() => {
                       openMosqueDisplay(mosque.id);
                     }}
+                    onFocus={() => setFocusedCardIndex(index)}
                   >
                     {/* صورة المسجد */}
                     <div className="relative h-48 overflow-hidden">

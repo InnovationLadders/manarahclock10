@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { User } from 'firebase/auth';
 import { ReactComponent as ManarahLogo } from '../assets/ManarahLogo.svg';
 import { useCurrentTime } from '../hooks/useTime';
@@ -8,6 +8,7 @@ import PrayerTimesBar from './PrayerTimesBar';
 import CountdownRectangle from './CountdownRectangle';
 import DuasPanel from './DuasPanel';
 import AnnouncementsPanel from './AnnouncementsPanel';
+import { getCachedBackground, cacheBackground, getBackgroundToDisplay } from '../utils/backgroundCache';
 
 interface MainDisplayProps {
   user?: User | null;
@@ -20,9 +21,24 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   const { prayerTimes, settings, loading } = usePrayerTimes(user, mosqueId);
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
   const [backgroundLoadError, setBackgroundLoadError] = useState(false);
+  const [resolvedBgSrc, setResolvedBgSrc] = useState<string>('');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const lastBgUrlRef = useRef<string>('');
 
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes, settings) : null;
   const isPortrait = settings.displayMode === 'portrait';
+
+  // مراقبة حالة الاتصال بالإنترنت
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   
   // تدوير الخلفيات تلقائياً
   useEffect(() => {
@@ -31,8 +47,6 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
         setCurrentBackgroundIndex(prev => 
           (prev + 1) % settings.backgrounds.length
         );
-        // إعادة تعيين حالة خطأ التحميل عند تغيير الخلفية
-        setBackgroundLoadError(false);
       }, settings.rotationInterval * 1000);
       
       return () => clearInterval(interval);
@@ -44,8 +58,6 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
     if (currentBackgroundIndex >= settings.backgrounds.length) {
       setCurrentBackgroundIndex(0);
     }
-    // إعادة تعيين حالة خطأ التحميل عند تغيير قائمة الخلفيات
-    setBackgroundLoadError(false);
   }, [settings.backgrounds.length, currentBackgroundIndex]);
   
   // تحديد الخلفية الحالية
@@ -60,17 +72,56 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   };
   
   const currentBackground = getCurrentBackground();
-  
-  // معالج خطأ تحميل الخلفية
-  const handleBackgroundError = (error: any) => {
-    console.error('خطأ في تحميل الخلفية:', currentBackground?.url, error);
-    setBackgroundLoadError(true);
-  };
-  
-  // إعادة تعيين خطأ التحميل عند تغيير الخلفية الحالية
+
+  // تحديد مصدر الخلفية: المحلية أولاً ثم الإنترنت
   useEffect(() => {
+    if (!currentBackground) return;
+    const bgUrl = currentBackground.url;
+    if (bgUrl === lastBgUrlRef.current && resolvedBgSrc) return;
+    lastBgUrlRef.current = bgUrl;
+
+    const { src, isCached } = getBackgroundToDisplay(bgUrl, isOnline);
+    if (src) {
+      setResolvedBgSrc(src);
+      setBackgroundLoadError(false);
+    } else if (!isOnline) {
+      // غير متصل ولا توجد نسخة محلية
+      const cached = getCachedBackground(bgUrl);
+      if (cached) {
+        setResolvedBgSrc(cached);
+        setBackgroundLoadError(false);
+      } else {
+        setResolvedBgSrc('');
+        setBackgroundLoadError(true);
+      }
+    } else {
+      setResolvedBgSrc(bgUrl);
+      setBackgroundLoadError(false);
+    }
+  }, [currentBackground, isOnline, resolvedBgSrc]);
+
+  // تخزين الخلفية محلياً عند نجاح التحميل
+  const handleBackgroundLoad = () => {
     setBackgroundLoadError(false);
-  }, [currentBackground?.id]);
+    if (currentBackground && isOnline) {
+      cacheBackground(currentBackground.url, currentBackground.type).catch(() => {});
+    }
+  };
+
+  // معالج خطأ تحميل الخلفية - استخدام النسخة المحلية إن وُجدت
+  const handleBackgroundError = () => {
+    if (currentBackground) {
+      const cached = getCachedBackground(currentBackground.url);
+      if (cached) {
+        setResolvedBgSrc(cached);
+        setBackgroundLoadError(false);
+      } else {
+        setBackgroundLoadError(true);
+      }
+    } else {
+      setBackgroundLoadError(true);
+    }
+  };
   
   // تحويل objectFit إلى فئات CSS
   const getObjectFitClass = (objectFit: string) => {
@@ -184,31 +235,29 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
                 </div>
               </div>
             </div>
-          ) : currentBackground.type === 'image' ? (
-            <img
-              src={currentBackground.url}
-              alt=""
-              className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${getObjectFitClass(currentBackground.objectFit)} ${getObjectPositionClass(currentBackground.objectPosition)}`}
-              onError={handleBackgroundError}
-              onLoad={() => setBackgroundLoadError(false)}
-            />
-          ) : (
-            <video
-              className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${getObjectFitClass(currentBackground.objectFit)} ${getObjectPositionClass(currentBackground.objectPosition)}`}
-              src={currentBackground.url}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              onLoadedData={() => {
-                console.log('تم تحميل الفيديو بنجاح:', currentBackground.url);
-                setBackgroundLoadError(false);
-              }}
-              onError={handleBackgroundError}
-              onLoadStart={() => setBackgroundLoadError(false)}
-            />
-          )}
+          ) : resolvedBgSrc ? (
+            currentBackground.type === 'image' ? (
+              <img
+                src={resolvedBgSrc}
+                alt=""
+                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${getObjectFitClass(currentBackground.objectFit)} ${getObjectPositionClass(currentBackground.objectPosition)}`}
+                onError={handleBackgroundError}
+                onLoad={handleBackgroundLoad}
+              />
+            ) : (
+              <video
+                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${getObjectFitClass(currentBackground.objectFit)} ${getObjectPositionClass(currentBackground.objectPosition)}`}
+                src={resolvedBgSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                onLoadedData={handleBackgroundLoad}
+                onError={handleBackgroundError}
+              />
+            )
+          ) : null}
         </>
       )}
       
