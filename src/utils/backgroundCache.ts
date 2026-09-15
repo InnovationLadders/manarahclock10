@@ -46,18 +46,8 @@ export const getCachedBackground = (url: string): string | null => {
 
 // محاولة الحصول على Blob من مصادر متعددة
 const fetchBlobFromSources = async (url: string): Promise<Blob | null> => {
-  // 1. محاولة fetch مباشرة
-  try {
-    const response = await fetch(url);
-    if (response.ok) {
-      const blob = await response.blob();
-      if (blob.size > 0) return blob;
-    }
-  } catch {
-    // فشل fetch (CORS أو شبكة) - ننتقل للخيار التالي
-  }
-
-  // 2. محاولة caches.match (من تخزين Service Worker)
+  // 1. محاولة caches.match أولاً (من تخزين Service Worker)
+  // caches.match لا يخضع لقيود CORS ويعمل بعد أول تحميل ناجح
   if ('caches' in window) {
     try {
       const cachedResponse = await caches.match(url);
@@ -68,6 +58,17 @@ const fetchBlobFromSources = async (url: string): Promise<Blob | null> => {
     } catch {
       // تجاهل الخطأ
     }
+  }
+
+  // 2. محاولة fetch مباشرة (قد تفشل بسبب CORS)
+  try {
+    const response = await fetch(url);
+    if (response.ok) {
+      const blob = await response.blob();
+      if (blob.size > 0) return blob;
+    }
+  } catch {
+    // فشل fetch (CORS أو شبكة)
   }
 
   return null;
@@ -178,51 +179,6 @@ export const tryGetLocalUrl = async (url: string): Promise<string | null> => {
   }
 
   return null;
-};
-
-// استخراج Blob من عنصر صورة محمل بالفعل باستخدام canvas (يتجاوز CORS تماماً)
-export const cacheFromImageElement = async (img: HTMLImageElement, url: string): Promise<string | null> => {
-  // إذا كانت موجودة في الذاكرة بالفعل
-  const existing = blobUrlMap.get(url);
-  if (existing) return existing;
-
-  const db = await getDB();
-  if (!db) return null;
-
-  // التحقق من IndexedDB أولاً
-  try {
-    const existingRecord = await db.get(STORE_NAME, url);
-    if (existingRecord) {
-      return ensureBlobUrl(url, existingRecord.blob);
-    }
-  } catch {
-    // تجاهل الخطأ
-  }
-
-  // استخراج البيانات من الصورة المحملة باستخدام canvas
-  try {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth || img.width;
-    canvas.height = img.naturalHeight || img.height;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    ctx.drawImage(img, 0, 0);
-
-    const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.92);
-    });
-
-    if (!blob || blob.size === 0) return null;
-
-    const record: CacheRecord = { url, blob, type: 'image', timestamp: Date.now() };
-    await db.put(STORE_NAME, record);
-    return ensureBlobUrl(url, blob);
-  } catch (error) {
-    // canvas قد يفشل إذا كانت الصورة من مصدر مختلف بدون crossOrigin
-    console.warn('فشل في استخراج الصورة عبر canvas:', url, error);
-    return null;
-  }
 };
 
 export const cacheBackgroundsFromSettings = async (backgrounds: { url: string; type: 'image' | 'video' }[]): Promise<void> => {
