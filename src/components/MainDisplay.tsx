@@ -8,7 +8,7 @@ import PrayerTimesBar from './PrayerTimesBar';
 import CountdownRectangle from './CountdownRectangle';
 import DuasPanel from './DuasPanel';
 import AnnouncementsPanel from './AnnouncementsPanel';
-import { getCachedBackground, cacheBackgroundAndGetUrl, cacheBackgroundsFromSettings, restoreBlobUrlsFromCache, tryGetLocalUrl } from '../utils/backgroundCache';
+import { getCachedBackground, cacheBackgroundAndGetUrl, cacheBackgroundsFromSettings, restoreBlobUrlsFromCache, tryGetLocalUrl, cacheFromImageElement } from '../utils/backgroundCache';
 
 interface MainDisplayProps {
   user?: User | null;
@@ -25,6 +25,8 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [cacheRestored, setCacheRestored] = useState(false);
   const lastBgUrlRef = useRef<string>('');
+  const lastValidBgSrcRef = useRef<string>('');
+  const bgImgRef = useRef<HTMLImageElement>(null);
 
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes, settings) : null;
   const isPortrait = settings.displayMode === 'portrait';
@@ -93,6 +95,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   useEffect(() => {
     if (!currentBackground) return;
     const bgUrl = currentBackground.url;
+    const bgType = currentBackground.type;
     if (bgUrl === lastBgUrlRef.current && resolvedBgSrc) return;
     lastBgUrlRef.current = bgUrl;
 
@@ -100,37 +103,85 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
     const cached = getCachedBackground(bgUrl);
     if (cached) {
       setResolvedBgSrc(cached);
+      lastValidBgSrcRef.current = cached;
       setBackgroundLoadError(false);
       return;
     }
 
-    // لا يوجد كاش محلي - نستخدم رابط الإنترنت ونحاول التخزين
-    setResolvedBgSrc(bgUrl);
-    setBackgroundLoadError(false);
+    // لا يوجد كاش محلي
+    if (isOnline) {
+      // متصل: نستخدم رابط الإنترنت ونحاول التخزين
+      setResolvedBgSrc(bgUrl);
+      setBackgroundLoadError(false);
 
-    // محاولة تخزين الخلفية محلياً وتحديث المصدر
-    cacheBackgroundAndGetUrl(bgUrl, currentBackground.type).then((localUrl) => {
-      if (localUrl) {
-        setResolvedBgSrc(localUrl);
-      }
-    }).catch(() => {});
-  }, [currentBackground, cacheRestored]);
+      cacheBackgroundAndGetUrl(bgUrl, bgType).then((localUrl) => {
+        if (localUrl) {
+          setResolvedBgSrc(localUrl);
+          lastValidBgSrcRef.current = localUrl;
+        }
+      }).catch(() => {});
+    } else {
+      // غير متصل: نحاول كل المصادر المحلية أولاً
+      tryGetLocalUrl(bgUrl).then((localUrl) => {
+        if (localUrl) {
+          setResolvedBgSrc(localUrl);
+          lastValidBgSrcRef.current = localUrl;
+          setBackgroundLoadError(false);
+        } else if (lastValidBgSrcRef.current) {
+          // استخدام آخر خلفية صالحة كحل أخير
+          setResolvedBgSrc(lastValidBgSrcRef.current);
+          setBackgroundLoadError(false);
+        } else {
+          setBackgroundLoadError(true);
+        }
+      }).catch(() => {
+        if (lastValidBgSrcRef.current) {
+          setResolvedBgSrc(lastValidBgSrcRef.current);
+          setBackgroundLoadError(false);
+        } else {
+          setBackgroundLoadError(true);
+        }
+      });
+    }
+  }, [currentBackground?.url, currentBackground?.type, cacheRestored, isOnline]);
 
   // تخزين الخلفية محلياً عند نجاح التحميل وتبديل المصدر للنسخة المحلية
   const handleBackgroundLoad = () => {
     setBackgroundLoadError(false);
-    if (currentBackground) {
-      const cached = getCachedBackground(currentBackground.url);
-      if (cached) {
-        if (resolvedBgSrc !== cached) {
-          setResolvedBgSrc(cached);
-        }
-        return;
+    if (!currentBackground) return;
+
+    const cached = getCachedBackground(currentBackground.url);
+    if (cached) {
+      if (resolvedBgSrc !== cached) {
+        setResolvedBgSrc(cached);
       }
-      // محاولة التخزين وتبديل المصدر للنسخة المحلية
+      lastValidBgSrcRef.current = cached;
+      return;
+    }
+
+    // للصور: استخراج Blob مباشرة من عنصر الصورة المحمل عبر canvas
+    // هذا يتجاوز CORS تماماً ولا يحتاج fetch
+    if (currentBackground.type === 'image' && bgImgRef.current) {
+      cacheFromImageElement(bgImgRef.current, currentBackground.url).then((localUrl) => {
+        if (localUrl) {
+          setResolvedBgSrc(localUrl);
+          lastValidBgSrcRef.current = localUrl;
+        }
+      }).catch(() => {
+        // فشل canvas (CORS) - محاولة fetch + caches.match كخيار احتياطي
+        cacheBackgroundAndGetUrl(currentBackground.url, currentBackground.type).then((localUrl) => {
+          if (localUrl) {
+            setResolvedBgSrc(localUrl);
+            lastValidBgSrcRef.current = localUrl;
+          }
+        }).catch(() => {});
+      });
+    } else {
+      // للفيديو: محاولة fetch + caches.match
       cacheBackgroundAndGetUrl(currentBackground.url, currentBackground.type).then((localUrl) => {
         if (localUrl) {
           setResolvedBgSrc(localUrl);
+          lastValidBgSrcRef.current = localUrl;
         }
       }).catch(() => {});
     }
@@ -147,12 +198,14 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
     const cached = getCachedBackground(currentBackground.url);
     if (cached) {
       setResolvedBgSrc(cached);
+      lastValidBgSrcRef.current = cached;
       setBackgroundLoadError(false);
       return;
     }
 
     // 2. إذا كانت هناك خلفية معروضة بالفعل، لا نعرض شاشة الخطأ
     if (resolvedBgSrc) {
+      lastValidBgSrcRef.current = resolvedBgSrc;
       return;
     }
 
@@ -160,12 +213,22 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
     tryGetLocalUrl(currentBackground.url).then((localUrl) => {
       if (localUrl) {
         setResolvedBgSrc(localUrl);
+        lastValidBgSrcRef.current = localUrl;
+        setBackgroundLoadError(false);
+      } else if (lastValidBgSrcRef.current) {
+        // استخدام آخر خلفية صالحة كحل أخير
+        setResolvedBgSrc(lastValidBgSrcRef.current);
         setBackgroundLoadError(false);
       } else {
         setBackgroundLoadError(true);
       }
     }).catch(() => {
-      setBackgroundLoadError(true);
+      if (lastValidBgSrcRef.current) {
+        setResolvedBgSrc(lastValidBgSrcRef.current);
+        setBackgroundLoadError(false);
+      } else {
+        setBackgroundLoadError(true);
+      }
     });
   };
   
@@ -284,8 +347,10 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
           ) : resolvedBgSrc ? (
             currentBackground.type === 'image' ? (
               <img
+                ref={bgImgRef}
                 src={resolvedBgSrc}
                 alt=""
+                crossOrigin="anonymous"
                 className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${getObjectFitClass(currentBackground.objectFit)} ${getObjectPositionClass(currentBackground.objectPosition)}`}
                 onError={handleBackgroundError}
                 onLoad={handleBackgroundLoad}

@@ -180,6 +180,51 @@ export const tryGetLocalUrl = async (url: string): Promise<string | null> => {
   return null;
 };
 
+// استخراج Blob من عنصر صورة محمل بالفعل باستخدام canvas (يتجاوز CORS تماماً)
+export const cacheFromImageElement = async (img: HTMLImageElement, url: string): Promise<string | null> => {
+  // إذا كانت موجودة في الذاكرة بالفعل
+  const existing = blobUrlMap.get(url);
+  if (existing) return existing;
+
+  const db = await getDB();
+  if (!db) return null;
+
+  // التحقق من IndexedDB أولاً
+  try {
+    const existingRecord = await db.get(STORE_NAME, url);
+    if (existingRecord) {
+      return ensureBlobUrl(url, existingRecord.blob);
+    }
+  } catch {
+    // تجاهل الخطأ
+  }
+
+  // استخراج البيانات من الصورة المحملة باستخدام canvas
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(img, 0, 0);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.92);
+    });
+
+    if (!blob || blob.size === 0) return null;
+
+    const record: CacheRecord = { url, blob, type: 'image', timestamp: Date.now() };
+    await db.put(STORE_NAME, record);
+    return ensureBlobUrl(url, blob);
+  } catch (error) {
+    // canvas قد يفشل إذا كانت الصورة من مصدر مختلف بدون crossOrigin
+    console.warn('فشل في استخراج الصورة عبر canvas:', url, error);
+    return null;
+  }
+};
+
 export const cacheBackgroundsFromSettings = async (backgrounds: { url: string; type: 'image' | 'video' }[]): Promise<void> => {
   for (const bg of backgrounds) {
     await cacheBackground(bg.url, bg.type);
