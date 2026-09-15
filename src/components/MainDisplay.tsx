@@ -8,7 +8,7 @@ import PrayerTimesBar from './PrayerTimesBar';
 import CountdownRectangle from './CountdownRectangle';
 import DuasPanel from './DuasPanel';
 import AnnouncementsPanel from './AnnouncementsPanel';
-import { getCachedBackground, cacheBackground, cacheBackgroundsFromSettings, restoreBlobUrlsFromCache } from '../utils/backgroundCache';
+import { getCachedBackground, cacheBackgroundAndGetUrl, cacheBackgroundsFromSettings, restoreBlobUrlsFromCache, tryGetLocalUrl } from '../utils/backgroundCache';
 
 interface MainDisplayProps {
   user?: User | null;
@@ -96,54 +96,77 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
     if (bgUrl === lastBgUrlRef.current && resolvedBgSrc) return;
     lastBgUrlRef.current = bgUrl;
 
-    // التحقق من الكاش المحلي أولاً دائماً (سواء متصل أو غير متصل)
+    // التحقق من الكاش المحلي أولاً (سواء متصل أو غير متصل)
     const cached = getCachedBackground(bgUrl);
     if (cached) {
       setResolvedBgSrc(cached);
       setBackgroundLoadError(false);
-      // محاولة تحديث الكاش من الإنترنت في الخلفية إذا كان متصلاً
-      if (isOnline) {
-        cacheBackground(bgUrl, currentBackground.type).catch(() => {});
-      }
       return;
     }
 
-    // لا يوجد كاش محلي
-    if (isOnline) {
-      setResolvedBgSrc(bgUrl);
-      setBackgroundLoadError(false);
-      // محاولة تخزين الخلفية فور تحميلها
-      cacheBackground(bgUrl, currentBackground.type).catch(() => {});
-    } else if (!resolvedBgSrc) {
-      // عدم مسح الخلفية المعروضة حالياً عند انقطاع الإنترنت
-      setResolvedBgSrc('');
-      setBackgroundLoadError(true);
-    }
-  }, [currentBackground, isOnline, resolvedBgSrc, cacheRestored]);
+    // لا يوجد كاش محلي - نستخدم رابط الإنترنت ونحاول التخزين
+    setResolvedBgSrc(bgUrl);
+    setBackgroundLoadError(false);
 
-  // تخزين الخلفية محلياً عند نجاح التحميل
+    // محاولة تخزين الخلفية محلياً وتحديث المصدر
+    cacheBackgroundAndGetUrl(bgUrl, currentBackground.type).then((localUrl) => {
+      if (localUrl) {
+        setResolvedBgSrc(localUrl);
+      }
+    }).catch(() => {});
+  }, [currentBackground, cacheRestored]);
+
+  // تخزين الخلفية محلياً عند نجاح التحميل وتبديل المصدر للنسخة المحلية
   const handleBackgroundLoad = () => {
     setBackgroundLoadError(false);
     if (currentBackground) {
-      cacheBackground(currentBackground.url, currentBackground.type).catch(() => {});
+      const cached = getCachedBackground(currentBackground.url);
+      if (cached) {
+        if (resolvedBgSrc !== cached) {
+          setResolvedBgSrc(cached);
+        }
+        return;
+      }
+      // محاولة التخزين وتبديل المصدر للنسخة المحلية
+      cacheBackgroundAndGetUrl(currentBackground.url, currentBackground.type).then((localUrl) => {
+        if (localUrl) {
+          setResolvedBgSrc(localUrl);
+        }
+      }).catch(() => {});
     }
   };
 
-  // معالج خطأ تحميل الخلفية - استخدام النسخة المحلية إن وُجدت
+  // معالج خطأ تحميل الخلفية - محاولة كل المصادر المحلية قبل إظهار الخطأ
   const handleBackgroundError = () => {
-    if (currentBackground) {
-      const cached = getCachedBackground(currentBackground.url);
-      if (cached) {
-        setResolvedBgSrc(cached);
-        setBackgroundLoadError(false);
-        return;
-      }
-      // إذا كانت هناك خلفية معروضة بالفعل، لا نعرض شاشة الخطأ
-      if (resolvedBgSrc) {
-        return;
-      }
+    if (!currentBackground) {
+      setBackgroundLoadError(true);
+      return;
     }
-    setBackgroundLoadError(true);
+
+    // 1. التحقق من الذاكرة
+    const cached = getCachedBackground(currentBackground.url);
+    if (cached) {
+      setResolvedBgSrc(cached);
+      setBackgroundLoadError(false);
+      return;
+    }
+
+    // 2. إذا كانت هناك خلفية معروضة بالفعل، لا نعرض شاشة الخطأ
+    if (resolvedBgSrc) {
+      return;
+    }
+
+    // 3. محاولة كل المصادر المحلية (IndexedDB + Cache API)
+    tryGetLocalUrl(currentBackground.url).then((localUrl) => {
+      if (localUrl) {
+        setResolvedBgSrc(localUrl);
+        setBackgroundLoadError(false);
+      } else {
+        setBackgroundLoadError(true);
+      }
+    }).catch(() => {
+      setBackgroundLoadError(true);
+    });
   };
   
   // تحويل objectFit إلى فئات CSS
