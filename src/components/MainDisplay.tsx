@@ -8,7 +8,7 @@ import PrayerTimesBar from './PrayerTimesBar';
 import CountdownRectangle from './CountdownRectangle';
 import DuasPanel from './DuasPanel';
 import AnnouncementsPanel from './AnnouncementsPanel';
-import { getCachedBackground, cacheBackground, getBackgroundToDisplay, cacheBackgroundsFromSettings, restoreBlobUrlsFromCache } from '../utils/backgroundCache';
+import { getCachedBackground, cacheBackground, cacheBackgroundsFromSettings, restoreBlobUrlsFromCache } from '../utils/backgroundCache';
 
 interface MainDisplayProps {
   user?: User | null;
@@ -23,8 +23,8 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   const [backgroundLoadError, setBackgroundLoadError] = useState(false);
   const [resolvedBgSrc, setResolvedBgSrc] = useState<string>('');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [cacheRestored, setCacheRestored] = useState(false);
   const lastBgUrlRef = useRef<string>('');
-  const hasProactivelyCachedRef = useRef(false);
 
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes, settings) : null;
   const isPortrait = settings.displayMode === 'portrait';
@@ -41,20 +41,20 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
     };
   }, []);
 
-  // استعادة روابط الخلفيات المخزنة من Cache API عند بدء التشغيل
+  // استعادة روابط الخلفيات المخزنة من IndexedDB عند بدء التشغيل
   useEffect(() => {
-    restoreBlobUrlsFromCache();
+    restoreBlobUrlsFromCache().then(() => {
+      setCacheRestored(true);
+    });
   }, []);
 
   // تخزين استباقي لكل خلفيات المسجد عند تحميل الإعدادات
   useEffect(() => {
-    if (hasProactivelyCachedRef.current) return;
     if (!settings.backgrounds || settings.backgrounds.length === 0) return;
-    hasProactivelyCachedRef.current = true;
 
     const backgroundsToCache = [...settings.backgrounds];
     cacheBackgroundsFromSettings(backgroundsToCache).catch(() => {});
-  }, [settings.backgrounds]);
+  }, [settings.backgrounds, cacheRestored]);
   
   // تدوير الخلفيات تلقائياً
   useEffect(() => {
@@ -89,7 +89,7 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
   
   const currentBackground = getCurrentBackground();
 
-  // تحديد مصدر الخلفية: الكاش المحلي أولاً دائماً ثم الإنترنت
+  // تحديد مصدر الخلفية: الكاش المحلي أولاً دائماً
   useEffect(() => {
     if (!currentBackground) return;
     const bgUrl = currentBackground.url;
@@ -112,11 +112,14 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
     if (isOnline) {
       setResolvedBgSrc(bgUrl);
       setBackgroundLoadError(false);
-    } else {
+      // محاولة تخزين الخلفية فور تحميلها
+      cacheBackground(bgUrl, currentBackground.type).catch(() => {});
+    } else if (!resolvedBgSrc) {
+      // عدم مسح الخلفية المعروضة حالياً عند انقطاع الإنترنت
       setResolvedBgSrc('');
       setBackgroundLoadError(true);
     }
-  }, [currentBackground, isOnline, resolvedBgSrc]);
+  }, [currentBackground, isOnline, resolvedBgSrc, cacheRestored]);
 
   // تخزين الخلفية محلياً عند نجاح التحميل
   const handleBackgroundLoad = () => {
@@ -133,12 +136,14 @@ const MainDisplay: React.FC<MainDisplayProps> = ({ user, mosqueFound = true, mos
       if (cached) {
         setResolvedBgSrc(cached);
         setBackgroundLoadError(false);
-      } else {
-        setBackgroundLoadError(true);
+        return;
       }
-    } else {
-      setBackgroundLoadError(true);
+      // إذا كانت هناك خلفية معروضة بالفعل، لا نعرض شاشة الخطأ
+      if (resolvedBgSrc) {
+        return;
+      }
     }
+    setBackgroundLoadError(true);
   };
   
   // تحويل objectFit إلى فئات CSS

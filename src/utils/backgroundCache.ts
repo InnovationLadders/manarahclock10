@@ -1,32 +1,33 @@
-const BG_CACHE_NAME = 'backgrounds-cache-v1';
-const BG_CACHE_INDEX_KEY = 'bg_cache_index';
+import { openDB, IDBPDatabase } from 'idb';
 
-interface CacheEntry {
+const DB_NAME = 'manarah-backgrounds';
+const STORE_NAME = 'backgrounds';
+const DB_VERSION = 1;
+
+interface CacheRecord {
   url: string;
-  blobUrl: string;
-  timestamp: number;
+  blob: Blob;
   type: 'image' | 'video';
+  timestamp: number;
 }
 
-const readIndex = (): Record<string, CacheEntry> => {
-  try {
-    const raw = localStorage.getItem(BG_CACHE_INDEX_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-};
+let dbPromise: Promise<IDBPDatabase | null> | null = null;
 
-const writeIndex = (index: Record<string, CacheEntry>): void => {
-  try {
-    const serializable: Record<string, { url: string; timestamp: number; type: 'image' | 'video' }> = {};
-    for (const [key, entry] of Object.entries(index)) {
-      serializable[key] = { url: entry.url, timestamp: entry.timestamp, type: entry.type };
-    }
-    localStorage.setItem(BG_CACHE_INDEX_KEY, JSON.stringify(serializable));
-  } catch (error) {
-    console.warn('خطأ في حفظ فهرس الخلفيات:', error);
+const getDB = (): Promise<IDBPDatabase | null> => {
+  if (!('indexedDB' in window)) return Promise.resolve(null);
+  if (!dbPromise) {
+    dbPromise = openDB(DB_NAME, DB_VERSION, {
+      upgrade(db) {
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: 'url' });
+        }
+      },
+    }).catch((err) => {
+      console.warn('فشل في فتح قاعدة بيانات الخلفيات:', err);
+      return null;
+    });
   }
+  return dbPromise;
 };
 
 const urlToKey = (url: string): string => {
@@ -41,57 +42,40 @@ const urlToKey = (url: string): string => {
 
 const blobUrlMap = new Map<string, string>();
 
+const ensureBlobUrl = (key: string, blob: Blob): string => {
+  const existing = blobUrlMap.get(key);
+  if (existing) return existing;
+  const blobUrl = URL.createObjectURL(blob);
+  blobUrlMap.set(key, blobUrl);
+  return blobUrl;
+};
+
 export const getCachedBackground = (url: string): string | null => {
   const key = urlToKey(url);
-  if (blobUrlMap.has(key)) {
-    return blobUrlMap.get(key)!;
-  }
-  const index = readIndex();
-  const entry = index[key];
-  if (entry && entry.url === url && entry.blobUrl) {
-    if (blobUrlMap.has(key)) {
-      return blobUrlMap.get(key)!;
-    }
-    return entry.blobUrl;
-  }
-  return null;
+  return blobUrlMap.get(key) ?? null;
 };
 
 export const cacheBackground = async (url: string, type: 'image' | 'video'): Promise<void> => {
-  const existing = getCachedBackground(url);
-  if (existing) return;
+  const key = urlToKey(url);
+  if (blobUrlMap.has(key)) return;
+
+  const db = await getDB();
+  if (!db) return;
 
   try {
-    if (!('caches' in window)) return;
-
-    const cache = await caches.open(BG_CACHE_NAME);
-    const cachedResponse = await cache.match(url);
-
-    if (cachedResponse) {
-      const blob = await cachedResponse.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const key = urlToKey(url);
-      blobUrlMap.set(key, blobUrl);
-
-      const index = readIndex();
-      index[key] = { url, blobUrl, timestamp: Date.now(), type };
-      writeIndex(index);
+    const existing = await db.get(STORE_NAME, url);
+    if (existing) {
+      ensureBlobUrl(key, existing.blob);
       return;
     }
 
-    const response = await fetch(url, { mode: 'cors' });
+    const response = await fetch(url);
     if (!response.ok) return;
 
-    await cache.put(url, response.clone());
-
     const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const key = urlToKey(url);
-    blobUrlMap.set(key, blobUrl);
-
-    const index = readIndex();
-    index[key] = { url, blobUrl, timestamp: Date.now(), type };
-    writeIndex(index);
+    const record: CacheRecord = { url, blob, type, timestamp: Date.now() };
+    await db.put(STORE_NAME, record);
+    ensureBlobUrl(key, blob);
   } catch (error) {
     console.warn('فشل في تخزين الخلفية:', url, error);
   }
@@ -114,35 +98,21 @@ export const cacheBackgroundsFromSettings = async (backgrounds: { url: string; t
   }
 };
 
-export const restoreBlobUrlsFromCache = async (): Promise<void> => {
+export const restoreBlobUrlsFromCache = async (): Promise<boolean> => {
+  const db = await getDB();
+  if (!db) return false;
+
   try {
-    if (!('caches' in window)) return;
-    const cache = await caches.open(BG_CACHE_NAME);
-    const requests = await cache.keys();
-    const index = readIndex();
-
-    for (const request of requests) {
-      const url = request.url;
-      const key = urlToKey(url);
-      if (blobUrlMap.has(key)) continue;
-
-      const response = await cache.match(request);
-      if (!response) continue;
-
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      blobUrlMap.set(key, blobUrl);
-
-      const existing = index[key];
-      index[key] = {
-        url,
-        blobUrl,
-        timestamp: existing?.timestamp || Date.now(),
-        type: existing?.type || 'image',
-      };
+    const all: CacheRecord[] = await db.getAll(STORE_NAME);
+    for (const record of all) {
+      const key = urlToKey(record.url);
+      if (!blobUrlMap.has(key)) {
+        ensureBlobUrl(key, record.blob);
+      }
     }
-    writeIndex(index);
+    return true;
   } catch (error) {
     console.warn('فشل في استعادة الخلفيات المخزنة:', error);
+    return false;
   }
 };
